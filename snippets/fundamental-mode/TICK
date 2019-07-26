@@ -1,0 +1,5 @@
+# key: TICK
+# name: Ticket
+# uuid: 0FAB8EA6-9134-4827-BEB6-126F58C1FDEC
+# --
+`(unless tickets-list "INFRA-")`${0:`(yas-choose-value tickets-list)`}

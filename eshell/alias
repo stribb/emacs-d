@@ -1,0 +1,4 @@
+alias clear! clear-scrollback
+alias ff for i in ${eshell-flatten-list $*} {find-file $i}
+alias emacs for i in ${eshell-flatten-list $*} {find-file $i}
+alias d dired $1

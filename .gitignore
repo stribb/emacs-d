@@ -1,0 +1,15 @@
+.emacs.desktop
+.mc-lists.el
+SessionDesktop.el
+elpa/
+ido.last
+projectile-bookmarks.eld
+projectile.cache
+recentf
+straight/
+tramp
+transient/
+url/
+*.elc
+eshell/history
+eshell/lastdir
