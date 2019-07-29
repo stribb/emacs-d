@@ -5,13 +5,6 @@
 
 ;;; Code:
 
-(defun log-to-messages (symbol newval operation where)
-  "Variable watcher sink."
-  (message "%s %s %s %s" symbol newval operation where))
-
-                                        ; (add-variable-watcher 'window-system 'log-to-messages)
-                                        ; (debug-on-entry 'menu-bar-mode)
-
 ;; Speed up init.
 (defvar file-name-handler-alist-old file-name-handler-alist)
 
@@ -23,12 +16,12 @@
       gc-cons-percentage 0.6
       auto-window-vscroll nil)
 (add-hook 'after-init-hook
-          '(lambda ()
-             (setq debug-on-error nil
-                   file-name-handler-alist file-name-handler-alist-old
-                   gc-cons-threshold 800000
-                   gc-cons-percentage 0.1)
-             (garbage-collect)) t)
+          #'(lambda ()
+              (setq debug-on-error nil
+                    file-name-handler-alist file-name-handler-alist-old
+                    gc-cons-threshold 800000
+                    gc-cons-percentage 0.1)
+              (garbage-collect)) t)
 
 
 (dolist (d '("config" "elisp-misc"))
@@ -192,12 +185,13 @@
          ("<tab>" . helm-execute-persistent-action)
          ("C-i" . helm-execute-persistent-action)
          ("C-z" . helm-select-action))
+  :demand t
   :config
   (require 'helm-config)
   (defun stribb/helm-eshell-completions nil
     (eshell-cmpl-initialize)
-    (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
-    (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))
+    (define-key 'eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
+    (define-key 'eshell-mode-map (kbd "M-p") 'helm-eshell-history))
   (add-hook 'eshell-mode-hook #'stribb/helm-eshell-completions)
   (helm-mode 1))
 
@@ -277,7 +271,6 @@
          ("C-~" . projectile-previous-project-buffer))
   :demand t
   :config
-  ;;  (require 'magit-git)
   (defun stribb/magit-status-or-dired ()
     (interactive)
     (if (magit-toplevel)
@@ -645,10 +638,10 @@ Example usage: (with-face \"foo\" :background \"red\")"
   `(propertize ,str 'face (list ,@properties)))
 
 (progn  ;; eshell
-  (defun stribb/eshell-mode-setup ()
-    (bind-key "C-c h" #'helm-eshell-history eshell-mode-map))
+  ;; (defun stribb/eshell-mode-setup ()
+  ;;   nil)
 
-  (add-hook 'eshell-mode-hook #'stribb/eshell-mode-setup)
+  ;; (add-hook 'eshell-mode-hook #'stribb/eshell-mode-setup)
 
   (defun stribb/eshell-prompt-function ()
     "Custom prompt function."
