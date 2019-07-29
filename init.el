@@ -207,14 +207,14 @@
     (setq eshell-path-env (getenv "PATH")))
   (add-hook 'eshell-post-command-hook #'stribb/eshell-env-to-path))
 
-(use-package htmlize)
-
 (use-package org
   :init (load "org-config")
-  :after htmlize
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c l" . org-store-link)
          ("C-c C-x TAB" . org-clock-in)))
+
+(use-package htmlize
+  :after org)
 
 (use-package org-pomodoro
   :after org
