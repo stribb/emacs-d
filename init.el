@@ -741,7 +741,9 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-(server-start)
+(if (not server-process)
+    (server-start))
+
 (message "Init finished: %d GCs, startup time %s" gcs-done (emacs-init-time))
 
 ;;;
