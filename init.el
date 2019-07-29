@@ -96,8 +96,7 @@
 
 (use-package smartscan
   :defer 2
-  :config  (global-smartscan-mode t))
-
+  :config (global-smartscan-mode t))
 
 (use-package multiple-cursors
   :hydra (hydra-multiple-cursors
@@ -195,12 +194,11 @@
   (add-hook 'eshell-mode-hook #'stribb/helm-eshell-completions)
   (helm-mode 1))
 
-(use-package helm-rg
+(use-package helm-rg  ;; ripgrep
   :after helm)
 
 (use-package direnv
   :config
-  (add-to-list 'direnv-non-file-modes 'magit-mode) ;; till it's upstream
   (direnv-mode)
   (defun stribb/eshell-env-to-path ()
     "Put $PATH into `eshell-env-path'"
