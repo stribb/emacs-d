@@ -478,6 +478,7 @@
 (use-package groovy-mode
   :mode "\\.groovy\\'")
 
+
 (progn
   (use-package clojure-mode
     :mode "\\.clj\\'"
@@ -489,11 +490,22 @@
   (use-package clojure-mode-extra-font-locking
     :after clojure-mode)
 
+  (use-package clj-refactor
+    :after clojure-mode
+    :config
+    (defun clj-refactor-clj-mode-hook nil
+      (clj-refactor-mode 1)
+      (yas-minor-mode 1) ; for adding require/use/import statements
+      ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+      (cljr-add-keybindings-with-prefix "C-c C-m"))
+    (add-hook 'clojure-mode-hook #'clj-refactor-clj-mode-hook))
+
   (use-package cider
     :after clojure-mode
     :config
     (add-hook 'cider-repl-mode-hook #'turn-on-smartparens-strict-mode)
     (setq-default cider-save-file-on-load t
+                  cider-prompt-for-symbol nil
                   cider-eval-result-prefix ";; => "))
 
   (use-package slamhound
