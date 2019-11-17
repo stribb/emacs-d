@@ -430,6 +430,33 @@
     :config (add-hook 'go-mode-hook 'go-eldoc-setup)))
 
 (progn
+  (use-package erlang
+    :mode ("\\.erl\\'" . erlang-mode)
+    :config
+    (require 'erlang-start))
+
+  (use-package distel
+    :straight (distel :type git :host github :repo "massemanet/distel"
+                      :files (:defaults  "elisp/*.el"))
+    :after erlang)
+
+  (use-package company-distel
+    :after distel)
+
+  (use-package flycheck-tip
+    :after erlang-mode))
+
+(progn
+  (use-package elixir-mode
+    :mode "\\.exs\\'"
+    :config
+    (add-hook 'elixir-mode-hook
+              (lambda () (add-hook 'before-save-hook 'elixir-format nil t))))
+
+  (use-package alchemist
+    :after elixir-mode))
+
+(progn
   (with-eval-after-load 'python
     (defun python-shell-completion-native-try ()
       "Return non-nil if can trigger native completion."
