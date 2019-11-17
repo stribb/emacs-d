@@ -740,8 +740,15 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
     (switch-to-buffer other-buffer)
     (switch-to-buffer-other-window this-buffer)
     (other-window -1)))
-
 (define-key ctl-x-4-map (kbd "t") 'transpose-windows)
+
+(defun just-save-buffer ()
+  "Mask out save hooks and save the buffer."
+  (interactive)
+  (let (before-save-hook
+        write-contents-functions
+        after-save-hook)
+    (save-buffer)))
 
 (midnight-mode)
 (midnight-delay-set 'midnight-delay "0300")
