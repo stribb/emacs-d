@@ -781,3 +781,4 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
 
 ;;;
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
