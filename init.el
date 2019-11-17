@@ -132,11 +132,6 @@
 (use-package num3-mode
   :delight " #"
   :config
-  (progn  ;; Work around https://github.com/magit/magit/pull/3886
-    (defadvice num3-mode (around stribb/num3-mode-turn-on-maybe)
-      (unless (string-prefix-p "magit-" (symbol-name major-mode))
-        ad-do-it))
-    (ad-activate 'num3-mode))
   (global-num3-mode))
 
 (use-package yasnippet
