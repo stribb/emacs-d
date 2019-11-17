@@ -204,6 +204,7 @@
   :init (load "org-config")
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c l" . org-store-link)
+         ;; ("C-c C-," . org-insert-structure-template)  <-- already default
          ("C-c C-x TAB" . org-clock-in)))
 
 (use-package htmlize
