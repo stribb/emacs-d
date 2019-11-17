@@ -294,8 +294,9 @@
 
 ;; It's like a general purpose paredit-mode.
 (use-package smartparens
-  :hook (((prog-mode-hook markdown-mode-hook) . turn-on-smartparens-mode)
-         ((ielm-mode-hook elisp-mode-hook) . turn-on-smartparens-strict-mode))
+  :hook
+  ((prog-mode-hook markdown-mode-hook) . turn-on-smartparens-mode)
+  ((ielm-mode-hook elisp-mode-hook) . turn-on-smartparens-strict-mode)
   :bind (:map smartparens-mode-map
               ("M-(" . sp-wrap-round)
               ("M-[" . sp-wrap-square)
