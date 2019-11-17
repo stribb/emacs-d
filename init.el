@@ -355,13 +355,9 @@
 
 (use-package eldoc
   :delight
-  :commands turn-on-eldoc-mode
-  :defer t
-  :init
-  (progn
-    (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-    (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-    (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)))
+  ;; :hook
+  ;; ((emacs-lisp-mode-hook lisp-interaction-mode-hook ielm-mode-hook) . turn-on-eldoc-mode)
+  :config (global-eldoc-mode))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
