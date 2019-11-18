@@ -130,6 +130,9 @@
   :config (which-key-mode))
 
 (use-package num3-mode
+  :straight (num3-mode :host github :repo "emacs-straight/num3-mode"
+                       :fork (:host github
+                                    :repo "stribb/num3-mode"))
   :delight " #"
   :config
   (global-num3-mode))
