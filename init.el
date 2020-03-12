@@ -792,22 +792,26 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
 (midnight-delay-set 'midnight-delay "0300")
 
 (setq-default
- indent-tabs-mode nil
- save-interprogram-paste-before-kill t
- apropos-do-all t
- mouse-yank-at-point t
- require-final-newline t
- visible-bell t
- load-prefer-newer t
- ediff-window-setup-function 'ediff-setup-windows-plain
- save-place-file (concat user-emacs-directory "places")
- backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
- vc-follow-symlinks t
- text-scale-mode-step 1.1
- sh-learn-basic-offset t
  default-frame-alist (append '((tool-bar-lines . 0))
                              (if (display-graphic-p)
-                                 '((width . 80) (height . 70)))))
+                                 '((width . 93) (height . 70)))))
+
+(setq-default
+ apropos-do-all t
+ backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+ ediff-window-setup-function 'ediff-setup-windows-default
+ indent-tabs-mode nil
+ load-prefer-newer t
+ mouse-yank-at-point t
+ require-final-newline t
+ save-interprogram-paste-before-kill t
+ save-place-file (concat user-emacs-directory "places")
+ sh-learn-basic-offset t
+ smerge-command-prefix "\C-cm"
+ text-scale-mode-step 1.1
+ vc-follow-symlinks t
+ view-read-only t
+ visible-bell t)
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
