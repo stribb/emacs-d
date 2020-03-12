@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: repo-root
+# key: repo
+# --
+REPO_ROOT="\$(git rev-parse --show-toplevel)"
