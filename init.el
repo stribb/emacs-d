@@ -781,6 +781,13 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
         after-save-hook)
     (save-buffer)))
 
+(defun vc-rename-this (new)
+  "Rename the file this buffer is visiting to NEW."
+  (interactive (list (read-file-name "Rename to: ")))
+  (when (not (buffer-file-name))
+    (error "This buffer is not visiting a file"))
+  (vc-rename-file (buffer-file-name) new))
+
 (midnight-mode)
 (midnight-delay-set 'midnight-delay "0300")
 
