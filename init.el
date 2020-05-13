@@ -277,7 +277,7 @@
       (projectile-find-file)))
 
   (setq projectile-project-search-path
-        '("~/finn/" "~/spt/" "~/experimental" "~/go/src")
+        (seq-filter #'file-directory-p '("~/finn/" "~/spt/" "~/experimental" "~/go/src"))
         ;; (projectile-discover-projects-in-search-path)
         projectile-switch-project-action 'stribb/magit-status-or-dired)
   (run-with-idle-timer 20 3600 'projectile-discover-projects-in-search-path)
