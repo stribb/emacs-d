@@ -233,6 +233,7 @@
   :demand t
   :config
   (setq magit-log-section-commit-count 20)
+  (define-key with-editor-mode-map "\C-cP" 'git-commit-prev-message)
   (add-hook 'magit-mode-hook #'direnv-update-environment) ; ?
   (add-to-list 'magit-section-initial-visibility-alist '(recent . show))
   (add-to-list 'magit-section-initial-visibility-alist '(unstaged . show))
@@ -287,6 +288,9 @@
   :after helm projectile
   :bind-keymap (("s-p" . projectile-command-map)
                 ("C-c p" . projectile-command-map))
+  :bind (:map projectile-command-map
+              ("s-p" . projectile-switch-project)
+              ("C-c p" . projectile-switch-project))
   :config
   ;; Strange startup error, "Turn on helm-projectile key bindings".
   ;; Maybe this will help.
@@ -662,6 +666,8 @@ With ARG, go ARG forward or backward."
 
 (bind-keys
  ("M-z" . zap-up-to-char)
+ ("<home>" . beginning-of-buffer)
+ ("<end>" . end-of-buffer)
  ("s-f" . isearch-forward-regexp)
  ("C-s" . isearch-forward-regexp)
  ("C-r" . isearch-backward-regexp)
@@ -677,6 +683,7 @@ With ARG, go ARG forward or backward."
  ("M-/" . pop-tag-mark)
  ("M-SPC" . cycle-spacing)
  ("s-," . open-init-file)
+ ("s-s" . save-buffer)
  ("M-<kp-add>" . xref-find-definitions)
  ("M-<kp-subtract>" . xref-pop-marker-stack)
  ("<next>" . next-error-or-scroll-up)
