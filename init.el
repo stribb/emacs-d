@@ -666,6 +666,7 @@ With ARG, go ARG forward or backward."
 
 (bind-keys
  ("M-z" . zap-up-to-char)
+ ("M-Z" . forward-up-to-char)
  ("<home>" . beginning-of-buffer)
  ("<end>" . end-of-buffer)
  ("s-f" . isearch-forward-regexp)
@@ -779,6 +780,17 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
     (switch-to-buffer-other-window this-buffer)
     (other-window -1)))
 (define-key ctl-x-4-map (kbd "t") 'transpose-windows)
+
+(defun forward-up-to-char (arg char)
+  "Move forward to the ARGth occurence of CHAR."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     (read-char "Go to char: " t)))
+  ;; Avoid "obsolete" warnings for translation-table-for-input.
+  (with-no-warnings
+    (if (char-table-p translation-table-for-input)
+        (setq char (or (aref translation-table-for-input char) char))))
+  (search-forward (char-to-string char) nil nil arg)
+  (left-char))
 
 (defun just-save-buffer ()
   "Mask out save hooks and save the buffer."
