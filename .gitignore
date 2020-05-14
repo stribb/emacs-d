@@ -12,3 +12,6 @@ url/
 *.elc
 eshell/history
 eshell/lastdir
+session.*
+backups/
+auto-save-list/

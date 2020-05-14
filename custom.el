@@ -12,6 +12,7 @@
    (quote
     ((projectile-project-type quote python-pipenv)
      (projectile-project-test-cmd . "pytest")
+     (highlight-80+-columns . 100)
      (checkdoc-package-keywords-flag)
      (eval font-lock-add-keywords nil
            (\`
