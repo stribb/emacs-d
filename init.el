@@ -832,14 +832,17 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
  view-read-only t
  visible-bell t)
 
-(setq custom-file "~/.emacs.d/custom.el")
+(setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
+
+(defadvice en/disable-command (around put-in-custom-file activate)
+  "Put novice.el declarations in `custom-file'."
+  (let ((user-init-file custom-file))
+    ad-do-it))
 
 (if (not server-process)
     (server-start))
 
 (message "Init finished: %d GCs, startup time %s" gcs-done (emacs-init-time))
 
-;;;
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
+;;; init.el ends here
