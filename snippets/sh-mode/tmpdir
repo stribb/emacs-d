@@ -1,0 +1,8 @@
+# key: tmpdir
+# name: tmpdir
+# --
+TMP=$(mktemp -d -t "`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.XXXXXX")
+rm_tmp() {
+    rm -rf "$TMP"
+}
+trap rm_tmp EXIT
