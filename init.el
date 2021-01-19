@@ -195,9 +195,11 @@
   (helm-mode 1))
 
 (use-package helm-rg  ;; ripgrep
+  :if (executable-find "rg")
   :after helm)
 
 (use-package direnv
+  :if (executable-find "direnv")
   :config
   (direnv-mode)
   (defun stribb/eshell-env-to-path ()
@@ -275,7 +277,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :config
   (setq magit-log-section-commit-count 20)
   (define-key with-editor-mode-map "\C-cP" 'git-commit-prev-message)
-  (add-hook 'magit-mode-hook #'direnv-update-environment) ; ?
+  (if (executable-find "direnv")
+      (add-hook 'magit-mode-hook #'direnv-update-environment)) ; ?
   (add-to-list 'magit-section-initial-visibility-alist '(recent . show))
   (add-to-list 'magit-section-initial-visibility-alist '(unstaged . show))
   (magit-add-section-hook 'magit-status-sections-hook
