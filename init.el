@@ -322,7 +322,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
       (projectile-find-file)))
 
   (setq projectile-project-search-path
-        (seq-filter #'file-directory-p '("~/finn/" "~/spt/" "~/experimental" "~/go/src"))
+        (seq-filter #'file-directory-p '("~/pexip" "~/experimental" "~/go/src"))
         ;; (projectile-discover-projects-in-search-path)
         projectile-switch-project-action 'stribb/magit-status-or-dired)
   (run-with-idle-timer 20 3600 'projectile-discover-projects-in-search-path)
