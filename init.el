@@ -285,6 +285,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     '("-c" "Create merge request", "--push-option=merge_request.create"))
   (transient-append-suffix 'magit-push "-c"
     '("-m" "Merge on success", "--push-option=merge_request.merge_when_pipeline_succeeds"))
+  (transient-append-suffix 'magit-push "-m"
+    '("-r" "Remove source branch", "--push-option=merge_request.remove_source_branch"))
   (magit-add-section-hook 'magit-status-sections-hook
                           'magit-insert-unpushed-to-upstream
                           'magit-insert-unpushed-to-pushremote)
