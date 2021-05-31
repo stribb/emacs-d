@@ -281,6 +281,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
       (add-hook 'magit-mode-hook #'direnv-update-environment)) ; ?
   (add-to-list 'magit-section-initial-visibility-alist '(recent . show))
   (add-to-list 'magit-section-initial-visibility-alist '(unstaged . show))
+  (transient-append-suffix 'magit-push "-n"
+    '("-c" "Create merge request", "--push-option=merge_request.create"))
+  (transient-append-suffix 'magit-push "-c"
+    '("-m" "Merge on success", "--push-option=merge_request.merge_when_pipeline_succeeds"))
   (magit-add-section-hook 'magit-status-sections-hook
                           'magit-insert-unpushed-to-upstream
                           'magit-insert-unpushed-to-pushremote)
@@ -330,11 +334,11 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package helm-projectile
   :after helm projectile
-  :bind-keymap (("s-p" . projectile-command-map)
+  :bind-keymap (("S-p" . projectile-command-map)
                 ("C-c p" . projectile-command-map))
   :bind (:map projectile-command-map
-              ("s-p" . projectile-switch-project)
-              ("C-c p" . projectile-switch-project))
+              ("C-p" . projectile-switch-project)
+              ("p" . projectile-switch-project))
   :config
   ;; Strange startup error, "Turn on helm-projectile key bindings".
   ;; Maybe this will help.
@@ -471,7 +475,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (progn
   (use-package go-mode
-    :mode "\\.go\\'"
+    :mode "\\.go\\'\\|/go\\.mod"
     :config
     (setq gofmt-command "goimports")
     (add-hook 'before-save-hook 'gofmt-before-save)
@@ -617,6 +621,19 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (when (string= system-type "darwin")
   (setq dired-use-ls-dired nil))
 
+(progn ;; Cue
+  (define-derived-mode cue-mode json-mode
+    """Major mode for editing Cue files."
+    (setq cue-keywords '("package" "let" "import"))
+
+    (setq cue-font-lock-keywords-1
+          (cons `(,(regexp-opt cue-keywords 'symbols) 1 font-lock-keyword-face)
+                json-font-lock-keywords-1))
+    (set (make-local-variable 'font-lock-defaults)
+         '(cue-font-lock-keywords-1 t)))
+
+  (add-to-list 'auto-mode-alist '("\\.cue\\'" . cue-mode)))
+
 ;; Compile mode deserves some ANSI colour love
 (when (require 'ansi-color nil t)
   (defun stribb/colorize-compilation-buffer ()
@@ -736,7 +753,8 @@ With ARG, go ARG forward or backward."
  ("C-<next>" . scroll-up-command)
  ("C-<prior>" . scroll-down-command)
  ("<kp-add>" . next-error)
- ("<kp-subtract>" . previous-error))
+ ("<kp-subtract>" . previous-error)
+ ("C-z" . "undo"))
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
@@ -767,8 +785,7 @@ Example usage: (with-face \"foo\" :background \"red\")"
   (setq visual-line-fringe-indicators '(nil right-curly-arrow))
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode))
 
-;; isearch gubbins
-(progn
+(progn  ;; isearch gubbins
   ;; http://ergoemacs.org/emacs/emacs_isearch_by_arrow_keys.html set
   ;; arrow keys in isearch. left/right is backward/forward, up/down is
   ;; history.
