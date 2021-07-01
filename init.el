@@ -230,6 +230,8 @@
 
 ;; https://github.com/alphapapa/unpackaged.el#hydra
 (use-package smerge-mode
+  :bind (:map smerge-mode-map
+              ("C-c h" . alphapapa/smerge-hydra/body))
   :after hydra
   :config
   (defhydra alphapapa/smerge-hydra
