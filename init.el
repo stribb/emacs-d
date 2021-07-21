@@ -722,6 +722,12 @@ With ARG, go ARG forward or backward."
 (require 'saveplace)
 (setq-default save-place t)
 
+(defun stribb/server-edit-done ()
+  "Tell the client we're done with the buffer, then kill it."
+  (interactive)
+  (save-buffer)
+  (server-edit)
+  (kill-buffer-and-window))
 
 (bind-keys
  ("M-z" . zap-up-to-char)
@@ -752,7 +758,9 @@ With ARG, go ARG forward or backward."
  ("C-<prior>" . scroll-down-command)
  ("<kp-add>" . next-error)
  ("<kp-subtract>" . previous-error)
- ("C-z" . "undo"))
+ ("C-z" . undo)
+ :map sh-mode-map
+ ("C-x #" . stribb/server-edit-done))
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
@@ -898,6 +906,9 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
   "Put novice.el declarations in `custom-file'."
   (let ((user-init-file custom-file))
     ad-do-it))
+
+;; Bash and zsh fc:
+(add-to-list 'auto-mode-alist '("/bash-fc|/tmp/zsh" . sh-mode))
 
 (if (not server-process)
     (server-start))
