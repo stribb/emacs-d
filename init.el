@@ -683,7 +683,7 @@ With ARG, go ARG forward or backward."
       (call-interactively 'next-error)
     (call-interactively 'scroll-up-command)))
 
-(defun open-init-file ()
+(defun stribb/open-init-file ()
   "Opens the init file."
   (interactive)
   (find-file user-init-file))
@@ -750,7 +750,7 @@ With ARG, go ARG forward or backward."
  ("C-x B" . bury-buffer)
  ("M-/" . pop-tag-mark)
  ("M-SPC" . cycle-spacing)
- ("s-," . open-init-file)
+ ("s-," . stribb/open-init-file)
  ("s-s" . save-buffer)
  ("M-<kp-add>" . xref-find-definitions)
  ("M-<kp-subtract>" . xref-pop-marker-stack)
