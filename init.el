@@ -83,6 +83,13 @@
   (setq fish-completion-fallback-on-bash-p t)
   (global-fish-completion-mode))
 
+(use-package bazel
+  :straight (bazel
+             :type git
+             :host github
+             :repo "bazelbuild/emacs-bazel-mode"
+             :files (:defaults)))
+
 (use-package delight
   :config
   (delight '((emacs-lisp-mode ("Elisp" (lexical-binding ":Lex" ":Dyn")) :major)
