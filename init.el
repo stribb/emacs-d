@@ -317,11 +317,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-hook 'after-change-major-mode-hook
             'magit-auto-revert-mode-enable-in-buffers))
 
-(use-package forge
-  :disabled
-  :after magit
-  :config (setq ghub-use-workaround-for-emacs-bug nil))
-
 (use-package smartrep)
 
 (use-package projectile
