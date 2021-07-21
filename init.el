@@ -249,7 +249,7 @@
 _n_ext       _b_ase               _<_: upper/base        _C_ombine
 _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ^^           _l_ower              _>_: base/lower        _k_ill current
-^^           _a_ll                _R_efine
+^^           _a_ll                _R_efine               _ZZ_: save and bury
 ^^           _RET_: current       _E_diff
 "
     ("n" smerge-next)
