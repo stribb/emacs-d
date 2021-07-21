@@ -723,14 +723,6 @@ With ARG, go ARG forward or backward."
 (setq-default save-place t)
 
 
-(defun global-bind-keys (bindings)
-  "Bind BINDINGS (a list of (KEY . FN) pairs)."
-  (dolist (x bindings)
-    (let ((key (car x))
-          (fn (cdr x)))
-      (global-set-key (kbd key) fn)
-      bindings)))
-
 (bind-keys
  ("M-z" . zap-up-to-char)
  ("M-Z" . forward-up-to-char)
