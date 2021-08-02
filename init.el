@@ -23,7 +23,6 @@
                     gc-cons-percentage 0.1)
               (garbage-collect)) t)
 
-
 (dolist (d '("config" "elisp-misc"))
   (add-to-list 'load-path (concat user-emacs-directory d)))
 
@@ -836,7 +835,7 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
   (advice-add f :after 'stribb/isearch-region))
 
 (progn  ;; help-mode hijinks
-  (defun stribb/help-mode-revert-buffer (_ignore-auto _ignore-noconfirm)
+  (defun stribb/help-mode-revert-buffer (ignore-auto noconfirm)
     "Unconditionally revert `help-mode' buffer."
     (interactive)
     (help-mode-revert-buffer nil t))
