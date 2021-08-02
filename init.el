@@ -616,6 +616,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (when (fboundp 'horizontal-scroll-bar-mode)
     (horizontal-scroll-bar-mode -1)))
 
+(add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
+
 (defun prog0 (&rest body)
   "Evaluate BODY forms in turn, returning null."
   (prog1 nil body))
