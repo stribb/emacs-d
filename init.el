@@ -361,6 +361,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (helm-projectile-on)
   (projectile-mode 1))
 
+(use-package ripgrep)
+
+(use-package projectile-ripgrep)
 
 ;;; Programming modes
 
