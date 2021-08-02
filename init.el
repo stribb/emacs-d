@@ -142,7 +142,7 @@
                                     :repo "stribb/num3-mode"))
   :delight " #"
   :config
-  (global-num3-mode))
+  (global-num3-mode t))
 
 (use-package yasnippet
   :delight (yas-minor-mode " ✂")
@@ -303,7 +303,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                           'magit-insert-recent-commits
                           'magit-insert-unpushed-to-upstream)
   (remove-hook 'magit-status-sections-hook
-               'magit-insert-unpushed-to-upstream-or-recent))
+               'magit-insert-unpushed-to-upstream-or-recent)
+  (add-hook 'magit-mode (lambda () (num3-mode nil))))
+
 
 (use-package diff-hl
   :after magit
