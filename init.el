@@ -304,8 +304,16 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                           'magit-insert-unpushed-to-upstream)
   (remove-hook 'magit-status-sections-hook
                'magit-insert-unpushed-to-upstream-or-recent)
-  (add-hook 'magit-mode (lambda () (num3-mode nil))))
+  (add-hook 'magit-mode (lambda () (num3-mode nil)))
 
+  (defun stribb/new-branch-from-main (branch)
+    "Checkout main; pull from origin; checkout a spinout branch."
+    ;; Or spinoff; pull main; rebase onto main?
+    ;; TODO: deal with main vs master
+    (interactive (list (magit-read-string-ns "Spin off branch")))
+    (magit-checkout "main")
+    (magit-pull)
+    (magit-branch-spinoff branch)))
 
 (use-package diff-hl
   :after magit
