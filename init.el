@@ -879,7 +879,7 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
   (vc-rename-file (buffer-file-name) new))
 
 (midnight-mode)
-(midnight-delay-set 'midnight-delay "0300")
+(midnight-delay-set 'midnight-delay "03:00")
 
 (setq-default
  default-frame-alist (append '((tool-bar-lines . 0))
