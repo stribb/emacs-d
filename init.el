@@ -370,7 +370,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ;; It's like a general purpose paredit-mode.
 (use-package smartparens
   :hook
-  ((prog-mode-hook markdown-mode-hook) . turn-on-smartparens-mode)
+  ((prog-mode-hook markdown-mode-hook yaml-mode-hook) . turn-on-smartparens-mode)
   ((ielm-mode-hook elisp-mode-hook) . turn-on-smartparens-strict-mode)
   :bind (:map smartparens-mode-map
               ("M-(" . sp-wrap-round)
