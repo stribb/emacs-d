@@ -304,6 +304,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (remove-hook 'magit-status-sections-hook
                'magit-insert-unpushed-to-upstream-or-recent)
   (add-hook 'magit-mode (lambda () (num3-mode nil)))
+  (define-key magit-mode-line-process-map (kbd "<C-return>") 'helm-find-files)
 
   (defun stribb/new-branch-from-main (branch)
     "Checkout main; pull from origin; checkout a spinout branch."
