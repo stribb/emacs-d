@@ -395,12 +395,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
 
-(use-package aggressive-indent
-  :hook (prog-mode-hook . aggressive-indent-mode)
-  :config
-  (global-aggressive-indent-mode)
-  (add-to-list 'aggressive-indent-excluded-modes 'groovy-mode 'dockerfile-mode))
-
 ;; Thanks to https://amitp.blogspot.com/2014/04/emacs-rainbow-identifiers.html
 (use-package rainbow-identifiers
   :hook (prog-mode-hook . rainbow-identifiers-mode)
