@@ -199,7 +199,6 @@
          ("C-z" . helm-select-action))
   :demand t
   :config
-  (require 'helm-config)
   (defun stribb/helm-eshell-completions nil
     (eshell-cmpl-initialize)
     (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
@@ -297,11 +296,13 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-to-list 'magit-section-initial-visibility-alist '(recent . show))
   (add-to-list 'magit-section-initial-visibility-alist '(unstaged . show))
   (transient-append-suffix 'magit-push "-n"
-    '("-c" "Create merge request", "--push-option=merge_request.create"))
+    '("-c" "Create merge request" "--push-option=merge_request.create"))
   (transient-append-suffix 'magit-push "-c"
-    '("-m" "Merge on success", "--push-option=merge_request.merge_when_pipeline_succeeds"))
+    '("-m" "Merge on success" "--push-option=merge_request.merge_when_pipeline_succeeds"))
   (transient-append-suffix 'magit-push "-m"
-    '("-r" "Remove source branch", "--push-option=merge_request.remove_source_branch"))
+    '("-r" "Remove source branch" "--push-option=merge_request.remove_source_branch"))
+  (transient-append-suffix 'magit-fetch "-t"
+    '("-f" "Bypass safety checks" "--force"))
   (magit-add-section-hook 'magit-status-sections-hook
                           'magit-insert-unpushed-to-upstream
                           'magit-insert-unpushed-to-pushremote)
@@ -937,7 +938,8 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
 ;; Bash and zsh fc:
 (add-to-list 'auto-mode-alist '("/bash-fc|/tmp/zsh" . sh-mode))
 
-(if (not server-process)
+(if (or (not (boundp 'server-process))
+        (not server-process))
     (server-start))
 
 (message "Init finished: %d GCs, startup time %s" gcs-done (emacs-init-time))
