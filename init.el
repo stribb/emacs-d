@@ -514,16 +514,24 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :after go-mode
     :config (add-hook 'go-mode-hook 'go-eldoc-setup)))
 
+(use-package asdf
+  :straight (asdf :type git :host github :repo "tabfugnic/asdf.el")
+  :config (asdf-enable))
+
 (progn
   (use-package erlang
-    :mode ("\\.erl\\'" . erlang-mode)
+    ; :mode ("\\.erl\\'" . erlang-mode)
     :config
     (require 'erlang-start))
 
   (use-package distel
-    :straight (distel :type git :host github :repo "massemanet/distel"
-                      :files (:defaults  "elisp/*.el"))
-    :after erlang)
+    :disabled
+    :straight (distel :type git :host github :repo "massemanet/distel")
+    :load-path "straight/build/distel/elisp"
+    :after erlang
+    :config
+    (require 'distel)
+    (distel-setup))
 
   (use-package company-distel
     :after distel)
