@@ -783,6 +783,7 @@ With ARG, go ARG forward or backward."
  ("C-<prior>" . scroll-down-command)
  ("C-<next>" . scroll-up-command)
  ("s-," . stribb/open-init-file)
+ ("H-," . stribb/open-init-file)
  ("s-0" . text-scale-adjust)
  ("s--" . text-scale-adjust)
  ("s-=" . text-scale-adjust)
