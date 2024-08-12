@@ -9,7 +9,6 @@
 (defvar file-name-handler-alist-old file-name-handler-alist)
 
 (setq debug-on-error t
-      package-enable-at-startup nil
       file-name-handler-alist nil
       message-log-max 16384
       gc-cons-threshold 402653184
