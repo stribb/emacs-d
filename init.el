@@ -489,7 +489,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :mode "\\.tf\\'"
   :config (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
 
-(progn
+(when nil
   (use-package haskell-mode
     :mode (("\\.hs\\(c\\|-boot\\)?\\'" . haskell-mode)
            ("\\.lhs\\'" . literate-haskell-mode)
@@ -592,7 +592,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :mode "\\.groovy\\'")
 
 
-(progn
+(when nil
   (use-package clojure-mode
     :mode "\\.clj\\'"
     :after smartparens
@@ -604,6 +604,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :after clojure-mode)
 
   (use-package clj-refactor
+    :disabled
     :after clojure-mode
     :config
     (defun clj-refactor-clj-mode-hook nil
