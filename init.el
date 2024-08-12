@@ -376,6 +376,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 ;;; Programming modes
 
+(use-package eglot)
+
 ;; It's like a general purpose paredit-mode.
 (use-package smartparens
   :hook
