@@ -590,7 +590,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :config
     (elpy-enable)
     ;; flycheck > flymake
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
+          elpy-rpc-python-command "/home/stribb/.pyenv/shims/python")
     (add-hook 'elpy-mode-hook 'flycheck-mode))
 
   (use-package blacken
