@@ -54,11 +54,16 @@
 
 ;;; https://github.com/jwiegley/use-package
 
-(setq-default straight-use-package-by-default t
-              use-package-hook-name-suffix nil
+(setq-default use-package-hook-name-suffix nil
               use-package-compute-statistics t)
 (straight-use-package 'use-package)
 (require 'use-package)
+(use-package straight
+  :custom
+  ;; https://github.com/radian-software/straight.el/issues/1146
+  (straight-use-package-by-default t)
+  (straight-built-in-pseudo-packages '(emacs nadvice python image-mode project flymake xref)))
+
 
 (use-package exec-path-from-shell
   :if (string-equal system-type "darwin")
@@ -528,6 +533,13 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
   (use-package alchemist
     :after elixir-mode))
+
+(progn
+  (use-package gleam-ts-mode
+    :straight (gleam-ts-mode
+	       :type git
+	       :host github
+	       :repo "gleam-lang/gleam-mode")))
 
 (progn
   (with-eval-after-load 'python
