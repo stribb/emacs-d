@@ -474,7 +474,13 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :mode ("\\.jso?n\\'" . json-mode))
 
 (use-package yaml-mode
-  :mode ("\\.ya?ml\\|\\.crd\\'" . yaml-mode))
+  :mode ("\\.ya?ml\\|\\.crd\\'" . yaml-mode)
+  :config
+  (add-hook 'yaml-mode-hook
+            '(lambda ()
+               (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+  (add-hook 'yaml-mode-hook 'highlight-indentation-mode))
+
 
 (use-package puppet-mode
   :mode "\\.pp\\'")
