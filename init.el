@@ -373,6 +373,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package ripgrep)
 
 (use-package projectile-ripgrep)
+
 
 ;;; Programming modes
 
@@ -906,7 +907,7 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
   (search-forward (char-to-string char) nil nil arg)
   (left-char))
 
-(defun just-save-buffer ()
+(defun stribb/just-save-buffer ()
   "Mask out save hooks and save the buffer."
   (interactive)
   (let (before-save-hook
