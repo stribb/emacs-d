@@ -554,9 +554,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (progn
   (use-package gleam-ts-mode
     :straight (gleam-ts-mode
-	       :type git
-	       :host github
-	       :repo "gleam-lang/gleam-mode")))
+               :type git
+               :host github
+               :repo "gleam-lang/gleam-mode")))
 
 (progn
   (with-eval-after-load 'python
