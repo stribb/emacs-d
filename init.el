@@ -66,9 +66,9 @@
 
 
 (use-package exec-path-from-shell
-  :if (string-equal system-type "darwin")
   :config
-  (setq exec-path-from-shell-check-startup-files nil)
+  (if (string-equal system-type "darwin")
+      (setq exec-path-from-shell-check-startup-files nil))
   (exec-path-from-shell-initialize))
 
 (use-package use-package-ensure-system-package
