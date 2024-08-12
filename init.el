@@ -929,6 +929,11 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
                              (if (display-graphic-p)
                                  '((width . 93) (height . 70)))))
 
+;; Disable because we're not using GPG as an SSH agent everywhere.
+(when nil
+  (unless (string-prefix-p "/tmp/ssh-" (getenv "SSH_AUTH_SOCK"))
+    (setenv "SSH_AUTH_SOCK" (format "/run/user/%d/gnupg/S.gpg-agent.ssh" (user-uid)))))
+
 (setq-default
  apropos-do-all t
  backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
