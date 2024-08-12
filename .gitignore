@@ -15,3 +15,6 @@ eshell/lastdir
 session.*
 backups/
 auto-save-list/
+/eln-cache/
+/elpy/
+/tree-sitter/
