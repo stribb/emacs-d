@@ -1,4 +1,4 @@
-;;; package --- andstrib .emacs file
+;;; package --- stribb .emacs file
 
 ;;; Commentary:
 ;; Make Emacs more comfortable to use.
