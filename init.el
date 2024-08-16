@@ -377,6 +377,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 ;;; Programming modes
 
+;; The track-changes package is needed for eglot.
+(use-package track-changes
+    :straight (track-changes :type git :host github :repo "emacs-straight/track-changes"))  ;; WHY??!
+
 (use-package eglot)
 
 ;; It's like a general purpose paredit-mode.
