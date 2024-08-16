@@ -484,9 +484,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :mode ("\\.ya?ml\\|\\.crd\\'" . yaml-mode)
   :config
   (add-hook 'yaml-mode-hook
-            '(lambda ()
+            #'(lambda ()
                (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-  (add-hook 'yaml-mode-hook 'highlight-indentation-mode))
+  (add-hook 'yaml-mode-hook 'highlight-indentation-mode)
+  (add-to-list 'magic-mode-alist '("^# vi: set ft=yaml" . yaml-mode)))
 
 
 (use-package puppet-mode
