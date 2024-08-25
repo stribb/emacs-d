@@ -157,10 +157,6 @@
 (use-package yasnippet
   :delight (yas-minor-mode " ✂")
   :config
-  (require 'tickets)
-  (let ((f "~/finn/TICKETS"))
-    (when (file-directory-p f)
-      (tickets-file f)))
   (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "yasnippet-go") t)
   (yas-global-mode 1))
 
