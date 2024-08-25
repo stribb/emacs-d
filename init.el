@@ -56,14 +56,18 @@
 
 (setq-default use-package-hook-name-suffix nil
               use-package-compute-statistics t)
+(setq flycheck-emacs-lisp-load-path 'inherit)
+(require 'straight)
+
 (straight-use-package 'use-package)
 (require 'use-package)
 (use-package straight
   :custom
   ;; https://github.com/radian-software/straight.el/issues/1146
   (straight-use-package-by-default t)
-  (straight-built-in-pseudo-packages '(emacs nadvice python image-mode project flymake xref)))
+  (straight-built-in-pseudo-packages '(emacs nadvice python image-mode flymake xref)))
 
+(use-package project)
 
 (use-package exec-path-from-shell
   :config
