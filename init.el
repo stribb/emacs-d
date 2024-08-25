@@ -933,7 +933,34 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
 (setq-default
  default-frame-alist (append '((tool-bar-lines . 0))
                              (if (display-graphic-p)
-                                 '((width . 93) (height . 70)))))
+                                 '((width . 93)
+                                   (height . 70)
+                                   (alpha-background . 100)))))
+
+(set-frame-font "JetBrains Mono 12" nil t)
+
+(use-package ligature
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures
+   'prog-mode
+   ;; Copied from https://www.jetbrains.com/lp/mono/#ligatures
+   (split-string "-- --- == === != !== =!= =:= =/= <= >= && &&& &=
+ ++ +++ *** ;; !! ?? ??? ?: ?. ?= <: :< :> >: <:< <> <<< >>> <<
+ >> || -| _|_ |- ||- |= ||= ## ### #### #{ #[ ]# #( #? #_ #_( #:
+ #! #= ^= <$> <$ $> <+> <+ +> <*> <* *> </ </> /> <!-- <#-- -->
+ -> ->> <<- <- <=< =<< <<= <== <=> <==> ==> => =>> >=> >>= >>- >-
+ -< -<< >-> <-< <-| <=| |=> |-> <-> <~~ <~ <~> ~~ ~~> ~> ~- -~ ~@ [||]
+ |] [| |} {| [< >] |> <| ||> <|| |||> <||| <|> ... .. .= ..< .?
+ :: ::: := ::= :? :?> // /// /* */ /= //= /== @_ __ ??? <:< ;;;")
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
 
 ;; Disable because we're not using GPG as an SSH agent everywhere.
 (when nil
