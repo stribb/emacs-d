@@ -675,18 +675,16 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (when (string= system-type "darwin")
   (setq dired-use-ls-dired nil))
 
-(progn ;; Cue
-  (define-derived-mode cue-mode json-mode
-    """Major mode for editing Cue files."
-    (setq cue-keywords '("package" "let" "import"))
+;; (define-derived-mode cue-mode json-mode
+;;   "Major mode for editing Cue files."
+;;   (defvar cue-keywords '("package" "let" "import"))
 
-    (setq cue-font-lock-keywords-1
-          (cons `(,(regexp-opt cue-keywords 'symbols) 1 font-lock-keyword-face)
-                json-font-lock-keywords-1))
-    (set (make-local-variable 'font-lock-defaults)
-         '(cue-font-lock-keywords-1 t)))
+;;   (setq font-lock-defaults
+;;	(append font-lock-defaults
+;;		`((,(regexp-opt cue-keywords 'symbols)
+;;		   1 font-lock-keyword-face))))
 
-  (add-to-list 'auto-mode-alist '("\\.cue\\'" . cue-mode)))
+;;   (add-to-list 'auto-mode-alist '("\\.cue\\'" . cue-mode)))
 
 ;; Compile mode deserves some ANSI colour love
 (when (require 'ansi-color nil t)
