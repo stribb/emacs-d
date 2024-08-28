@@ -805,7 +805,7 @@ With ARG, go ARG forward or backward."
  ("s-=" . text-scale-adjust)
  ("C-z" . undo)
  ("M-<kp-add>" . xref-find-definitions)
- ("M-<kp-subtract>" . xref-pop-marker-stack)
+ ("M-<kp-subtract>" . xref-go-back)
  ("M-z" . zap-up-to-char))
 
 (with-eval-after-load 'sh-script
