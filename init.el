@@ -928,14 +928,14 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
 (midnight-mode)
 (midnight-delay-set 'midnight-delay "03:00")
 
-(setq-default
- default-frame-alist (append '((tool-bar-lines . 0))
-                             (if (display-graphic-p)
-                                 '((width . 93)
-                                   (height . 70)
-                                   (alpha-background . 100)))))
+(setq-default default-frame-alist
+              (append '((tool-bar-lines . 0))
+                      (when (display-graphic-p)
+                        '((alpha-background . 100)
+                          (height . 70)
+                          (width . 93)))))
 
-(set-frame-font "JetBrains Mono 12" nil t)
+(set-frame-font "JetBrains Mono 10" nil t)
 
 (use-package ligature
   :config
