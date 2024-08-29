@@ -93,6 +93,9 @@
   (setq fish-completion-fallback-on-bash-p t)
   (global-fish-completion-mode))
 
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
+
 (use-package bazel
   :straight (bazel
              :type git
