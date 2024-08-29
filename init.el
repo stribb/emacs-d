@@ -729,10 +729,17 @@ With ARG, go ARG forward or backward."
       (call-interactively 'next-error)
     (call-interactively 'scroll-up-command)))
 
-(defun stribb/open-init-file ()
+(defun stribb/open-init-file (n)
   "Opens the init file."
-  (interactive)
-  (find-file user-init-file))
+  (interactive "p")
+  (let ((buf (find-file-noselect user-init-file)))
+    (cond
+     ((= n 4)
+      (switch-to-buffer-other-window buf))
+     ((= n 5)
+      (switch-to-buffer-other-frame buf))
+     (t
+      (switch-to-buffer buf)))))
 
 (defun current-frame-move-to-monitor (n)
   "Move the current frame to monitor N."
