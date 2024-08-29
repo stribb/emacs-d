@@ -513,10 +513,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :mode "\\.go\\'\\|/go\\.mod"
     :config
     (setq gofmt-command "goimports")
-    (add-hook 'before-save-hook 'gofmt-before-save)
-    :bind (:map go-mode-map
-                ("M-." . godef-jump)
-                ("M-<kp-add>" . godef-jump)))
+    (add-hook 'before-save-hook 'gofmt-before-save))
 
   (use-package go-eldoc
     :after go-mode
