@@ -942,7 +942,9 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
                           (height . 70)
                           (width . 93)))))
 
-(set-frame-font "JetBrains Mono 10" nil t)
+(set-frame-font "JetBrainsMono Nerd Font-11" nil t)
+(set-fontset-font t 'unicode "JetBrainsMono Nerd Font" nil 'prepend)
+
 
 (use-package ligature
   :config
