@@ -19,3 +19,4 @@ auto-save-list/
 /elpy/
 /tree-sitter/
 /projects
+/.emacs.desktop.lock
