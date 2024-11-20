@@ -393,7 +393,11 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package track-changes
     :straight (track-changes :type git :host github :repo "emacs-straight/track-changes"))  ;; WHY??!
 
-(use-package eglot)
+(use-package eglot
+  :bind ("s-<return>" . eglot-code-action-quickfix)
+  :config
+  (setq-default eglot-workspace-configuration
+                '((:gopls . ((gofumpt . t))))))
 
 ;; It's like a general purpose paredit-mode.
 (use-package smartparens
@@ -525,7 +529,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :mode "\\.go\\'\\|/go\\.mod"
     :config
     (setq gofmt-command "goimports")
-    (add-hook 'before-save-hook 'gofmt-before-save))
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    :hook (go-mode-hook . (lambda () (setq fill-column 95))))
 
   (use-package go-eldoc
     :after go-mode
