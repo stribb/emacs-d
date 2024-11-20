@@ -71,7 +71,7 @@
 
 (use-package exec-path-from-shell
   :config
-  (if (string-equal system-type "darwin")
+  (when (string= system-type "darwin")
       (setq exec-path-from-shell-check-startup-files nil))
   (exec-path-from-shell-initialize))
 
@@ -511,7 +511,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :after haskell-mode
     :config (add-hook 'haskell-mode-hook 'intero-mode)))
 
-(progn
+(progn  ;; golang
   (use-package go-mode
     :mode "\\.go\\'\\|/go\\.mod"
     :config
@@ -662,9 +662,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
-(defun prog0 (&rest body)
+(defmacro prog0 (&rest body)
   "Evaluate BODY forms in turn, returning null."
-  (prog1 nil body))
+  `(prog1 nil ,@body))
 
 (defun stribb/java-indentation ()
   "Set the Java indentation to stribb's favourite style."
@@ -675,23 +675,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (when (string= system-type "darwin")
   (setq dired-use-ls-dired nil))
 
-;; (define-derived-mode cue-mode json-mode
-;;   "Major mode for editing Cue files."
-;;   (defvar cue-keywords '("package" "let" "import"))
 
-;;   (setq font-lock-defaults
-;;	(append font-lock-defaults
-;;		`((,(regexp-opt cue-keywords 'symbols)
-;;		   1 font-lock-keyword-face))))
-
-;;   (add-to-list 'auto-mode-alist '("\\.cue\\'" . cue-mode)))
-
-;; Compile mode deserves some ANSI colour love
-(when (require 'ansi-color nil t)
-  (defun stribb/colorize-compilation-buffer ()
-    (when (eq major-mode 'compilation-mode)
-      (ansi-color-apply-on-region compilation-filter-start (point-max))))
-  (add-hook 'compilation-filter-hook 'stribb/colorize-compilation-buffer))
+(use-package ansi-color
+  ;; Compile mode deserves some ANSI colour love
+  :hook (compilation-filter . ansi-color-compilation-filter))
 
 ;; Non-local Emacs files should start read-only
 (dir-locals-set-class-variables
@@ -699,12 +686,13 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
  '((nil . ((eval . (when buffer-file-name
                      (setq-local view-no-disable-on-exit t)
                      (view-mode-enter)))))))
-(let ((lst '("/usr/local/src/emacs" "/usr/local/share/emacs"
+(let ((dirs '("/usr/local/src/emacs" "/usr/local/share/emacs"
              "/usr/share/emacs" "~/.emacs.d/elpa/"
              "/Applications/Emacs.app/Contents/Resources/lisp/")))
-  (dolist (d lst)
+  (dolist (d dirs)
     (dir-locals-set-directory-class (expand-file-name d) 'readonly)))
 
+;; TODO: use smartparens
 (defun forward-or-backward-sexp (&optional arg)
   "Go to the matching parenthesis character if one is adjacent to point.
 With ARG, go ARG forward or backward."
@@ -718,16 +706,16 @@ With ARG, go ARG forward or backward."
 (defun previous-error-or-scroll-down ()
   "If Flycheck errors in buffer, go to previous one.  Otherwise scroll down."
   (interactive)
-  (if flycheck-current-errors
-      (call-interactively 'previous-error)
-    (call-interactively 'scroll-down-command)))
+  (call-interactively (if flycheck-current-errors
+                         'previous-error
+                        'scroll-down-command)))
 
 (defun next-error-or-scroll-up ()
   "If Flycheck errors in buffer, go to previous one.  Otherwise scroll up."
   (interactive)
-  (if flycheck-current-errors
-      (call-interactively 'next-error)
-    (call-interactively 'scroll-up-command)))
+  (call-interactively (if flycheck-current-errors
+                          'next-error
+                        'scroll-up-command)))
 
 (defun stribb/open-init-file (n)
   "Opens the init file."
