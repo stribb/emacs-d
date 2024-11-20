@@ -54,13 +54,18 @@
 
 ;;; https://github.com/jwiegley/use-package
 
-(setq-default use-package-hook-name-suffix nil
-              use-package-compute-statistics t)
+(use-package use-package
+  :config
+  (setq use-package-hook-name-suffix nil
+        use-package-compute-statistics t))
+
 (setq flycheck-emacs-lisp-load-path 'inherit)
 (require 'straight)
 
-(straight-use-package 'use-package)
-(require 'use-package)
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+
 (use-package straight
   :custom
   ;; https://github.com/radian-software/straight.el/issues/1146
