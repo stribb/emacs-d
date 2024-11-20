@@ -119,10 +119,6 @@
 (use-package iedit
   :bind ("C-;" . iedit-mode))
 
-(use-package smartscan
-  :defer 2
-  :config (global-smartscan-mode t))
-
 (use-package multiple-cursors
   :hydra (hydra-multiple-cursors
           nil
