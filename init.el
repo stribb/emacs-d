@@ -298,12 +298,21 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
       (add-hook 'magit-mode-hook #'direnv-update-environment)) ; ?
   (add-to-list 'magit-section-initial-visibility-alist '(recent . show))
   (add-to-list 'magit-section-initial-visibility-alist '(unstaged . show))
+  (transient-insert-suffix 'magit-push "o"
+    '("i" magit-push-implicitly))
   (transient-append-suffix 'magit-push "-n"
-    '("-c" "Create merge request" "--push-option=merge_request.create"))
+    '("-c" "GH: Create merge request"
+      "--push-option=merge_request.create"))
   (transient-append-suffix 'magit-push "-c"
-    '("-m" "Merge on success" "--push-option=merge_request.merge_when_pipeline_succeeds"))
+    '("-m" "GH: Merge on success"
+      "--push-option=merge_request.merge_when_pipeline_succeeds"))
   (transient-append-suffix 'magit-push "-m"
-    '("-r" "Remove source branch" "--push-option=merge_request.remove_source_branch"))
+    '("-r" "GH: Remove source branch"
+      "--push-option=merge_request.remove_source_branch"))
+  (transient-append-suffix 'magit-push "-r"
+    '("-w" "Gerrit: Mark WIP" "--push-option=wip"))
+  (transient-append-suffix 'magit-push "-w"
+    '("-W" "Gerrit: Mark Ready (remove WIP)" "--push-option=ready"))
   (transient-append-suffix 'magit-fetch "-t"
     '("-f" "Bypass safety checks" "--force"))
   (magit-add-section-hook 'magit-status-sections-hook
