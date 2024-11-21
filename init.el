@@ -823,25 +823,22 @@ With ARG, go ARG forward or backward."
 Example usage: (with-face \"foo\" :background \"red\")"
   `(propertize ,str 'face (list ,@properties)))
 
-(progn  ;; eshell
-  ;; (defun stribb/eshell-mode-setup ()
-  ;;   nil)
-
-  ;; (add-hook 'eshell-mode-hook #'stribb/eshell-mode-setup)
 (use-package sh-script
   :bind (:map sh-mode-map
 	      ("C-x #" . stribb/server-edit-done)))
 
+(use-package eshell
+  :preface
   (defun stribb/eshell-prompt-function ()
     "Custom prompt function."
     (let ((ok? eshell-last-command-status))
       (concat (with-face ": " :background (if ok? "gray" "red"))
               (abbreviate-file-name (eshell/pwd))
               (if (= (user-uid) 0) " # " " ; "))))
-
-  (setq-default eshell-prompt-regexp "^: [^#$;\n]* [#$;] "
-                eshell-prompt-function #'stribb/eshell-prompt-function
-                eshell-hist-ignoredups t))
+  :config
+  (setq eshell-prompt-regexp "^: [^#$;\n]* [#$;] "
+	eshell-prompt-function #'stribb/eshell-prompt-function
+	eshell-hist-ignoredups t))
 
 (progn  ;; visual-line mode
   (setq visual-line-fringe-indicators '(nil right-curly-arrow))
