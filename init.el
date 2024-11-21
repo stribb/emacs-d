@@ -669,6 +669,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
+;; Line numbers
+(setq-default display-line-numbers nil)
+(add-hook 'prog-mode-hook (lambda () (setq display-line-numbers t)))
+
 (defmacro prog0 (&rest body)
   "Evaluate BODY forms in turn, returning null."
   `(prog1 nil ,@body))
