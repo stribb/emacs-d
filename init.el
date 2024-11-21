@@ -291,7 +291,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package magit
   ;; Work around https://github.com/dgutov/diff-hl/issues/65 -- let's see if it works again?
   ;; :init (global-auto-revert-mode)
-  :bind (("C-x g" . magit-status))
+  :bind (("C-x g" . magit-status)
+	 :map magit-mode-line-process-map
+	 ("C-<return>" . helm-find-files))
+
   :demand t
   :config
   (setq magit-log-section-commit-count 20)
@@ -325,8 +328,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                           'magit-insert-unpushed-to-upstream)
   (remove-hook 'magit-status-sections-hook
                'magit-insert-unpushed-to-upstream-or-recent)
-  (add-hook 'magit-mode (lambda () (num3-mode nil)))
-  (define-key magit-mode-line-process-map (kbd "<C-return>") 'helm-find-files)
+  (add-hook 'magit-mode (lambda () (num3-mode nil))))
 
 (use-package diff-hl
   :after magit
