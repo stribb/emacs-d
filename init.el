@@ -928,7 +928,8 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
                       (when (display-graphic-p)
                         '((alpha-background . 100)
                           (height . 70)
-                          (width . 93)))))
+                          (width . 103)))))
+
 
 (set-frame-font "JetBrainsMono Nerd Font-11" nil t)
 (set-fontset-font t 'unicode "JetBrainsMono Nerd Font" nil 'prepend)
