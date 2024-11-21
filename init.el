@@ -684,7 +684,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (add-hook 'java-mode-hook 'stribb/java-indentation)
 
 (when (string= system-type "darwin")
-  (setq dired-use-ls-dired nil))
+  (setq dired-use-ls-dired nil)
+  (require 'ls-lisp))
 
 
 (use-package ansi-color
