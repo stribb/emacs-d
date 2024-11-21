@@ -815,13 +815,6 @@ With ARG, go ARG forward or backward."
  ("M-<kp-subtract>" . xref-go-back)
  ("M-z" . zap-up-to-char))
 
-(add-hook 'before-save-hook 'whitespace-cleanup)
-
-(defmacro with-face (str &rest properties)
-  "Apply PROPERTIES to STR.
-
-Example usage: (with-face \"foo\" :background \"red\")"
-  `(propertize ,str 'face (list ,@properties)))
 
 (use-package sh-script
   :bind (:map sh-mode-map
