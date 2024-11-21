@@ -31,7 +31,7 @@
 
 ;; This is necessary to tell `straight' where git is.
 (add-to-list 'exec-path "/usr/local/bin" t)
-(setenv "PATH" (mapconcat 'identity exec-path ":"))
+(setenv "PATH" (string-join exec-path ":"))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -216,11 +216,12 @@
 
 (use-package direnv
   :if (executable-find "direnv")
-  :config
-  (direnv-mode)
+  :preface
   (defun stribb/eshell-env-to-path ()
     "Put $PATH into `eshell-env-path'"
     (setq eshell-path-env (getenv "PATH")))
+  :config
+  (direnv-mode)
   (add-hook 'eshell-post-command-hook #'stribb/eshell-env-to-path))
 
 (use-package org
@@ -327,15 +328,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-hook 'magit-mode (lambda () (num3-mode nil)))
   (define-key magit-mode-line-process-map (kbd "<C-return>") 'helm-find-files)
 
-  (defun stribb/new-branch-from-main (branch)
-    "Checkout main; pull from origin; checkout a spinout branch."
-    ;; Or spinoff; pull main; rebase onto main?
-    ;; TODO: deal with main vs master
-    (interactive (list (magit-read-string-ns "Spin off branch")))
-    (magit-checkout "main")
-    (magit-pull)
-    (magit-branch-spinoff branch)))
-
 (use-package diff-hl
   :after magit
   :config
@@ -347,8 +339,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                'magit-auto-revert-mode-enable-in-buffers)
   (add-hook 'after-change-major-mode-hook
             'magit-auto-revert-mode-enable-in-buffers))
-
-(use-package smartrep)
 
 (use-package projectile
   :delight '(:eval (concat " " (projectile-project-name)))
@@ -768,9 +758,6 @@ With ARG, go ARG forward or backward."
 
 (defalias 'bfn 'prelude-copy-file-name-to-clipboard)
 (defalias 'yes-or-no-p 'y-or-n-p)
-
-(autoload 'zap-up-to-char "misc"
-  "Kill up to, but not including ARGth occurrence of CHAR." t)
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
