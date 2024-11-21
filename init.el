@@ -815,11 +815,6 @@ With ARG, go ARG forward or backward."
  ("M-<kp-subtract>" . xref-go-back)
  ("M-z" . zap-up-to-char))
 
-(with-eval-after-load 'sh-script
-  (bind-keys
-    :map sh-mode-map
-    ("C-x #" . stribb/server-edit-done)))
-
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
 (defmacro with-face (str &rest properties)
@@ -833,6 +828,9 @@ Example usage: (with-face \"foo\" :background \"red\")"
   ;;   nil)
 
   ;; (add-hook 'eshell-mode-hook #'stribb/eshell-mode-setup)
+(use-package sh-script
+  :bind (:map sh-mode-map
+	      ("C-x #" . stribb/server-edit-done)))
 
   (defun stribb/eshell-prompt-function ()
     "Custom prompt function."
