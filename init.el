@@ -389,8 +389,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package eglot
   :bind ("s-<return>" . eglot-code-action-quickfix)
   :config
-  (setq-default eglot-workspace-configuration
-                '((:gopls . ((gofumpt . t))))))
+  (setq eglot-workspace-configuration
+        '((:gopls . ((gofumpt . t))))))
 
 ;; It's like a general purpose paredit-mode.
 (use-package smartparens
@@ -491,13 +491,22 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package yaml-mode
   :mode ("\\.ya?ml\\|\\.crd\\'" . yaml-mode)
+  :bind (:map yaml-mode-map ("C-m" . newline-and-indent))
   :config
-  (add-hook 'yaml-mode-hook
-            #'(lambda ()
-               (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
   (add-hook 'yaml-mode-hook 'highlight-indentation-mode)
   (add-to-list 'magic-mode-alist '("^# vi: set ft=yaml" . yaml-mode)))
 
+(use-package ansible
+  :preface
+  (defun yaml-probably-ansible-p (&rest args)
+    "Guess whether the current buffer is likely to be Ansible code."
+    (string-match-p (rx (and "/ansible/" (0+ anything) "/tasks/"))
+                    buffer-file-name))
+  :config
+  (add-hook 'yaml-mode-hook
+            #'(lambda ()
+                (when (yaml-probably-ansible-p)
+                  (ansible-mode t)))))
 
 (use-package puppet-mode
   :mode "\\.pp\\'")
