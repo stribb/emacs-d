@@ -30,7 +30,7 @@
  ;; If there is more than one, they won't work right.
  '(default ((((class color) (min-colors 89)) (:foreground "#657b83" :background "#fdf6e3"))))
  '(helm-locate-finish ((t (:extend t :foreground "#859900\11"))))
- '(mode-line ((((class color) (min-colors 89)) (:inverse-video unspecified :overline "#657b83" :underline nil :foreground "#586e75" :background "#eee8d5" :box (:line-width (1 . 1) :color "#dc322f" :style unspecified))))))
+ '(mode-line ((((class color) (min-colors 89)) (:inverse-video unspecified :overline "#657b83" :underline nil :foreground "#586e75" :background "#eee8d5" :box (:line-width (1 . 1) :color "#dc322f"))))))
 (put 'narrow-to-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)

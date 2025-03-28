@@ -94,7 +94,7 @@
   (global-fish-completion-mode))
 
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :config (doom-modeline-mode 1))
 
 (use-package bazel
   :straight (bazel
@@ -336,12 +336,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :config
   (global-diff-hl-mode)
   (diff-hl-flydiff-mode)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  ;; Work around https://github.com/dgutov/diff-hl/issues/65
-  (remove-hook 'after-change-major-mode-hook
-               'magit-auto-revert-mode-enable-in-buffers)
-  (add-hook 'after-change-major-mode-hook
-            'magit-auto-revert-mode-enable-in-buffers))
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
 
 (use-package projectile
   :delight '(:eval (concat " " (projectile-project-name)))
@@ -501,7 +497,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package ansible
   :preface
-  (defun yaml-probably-ansible-p (&rest args)
+  (defun yaml-probably-ansible-p ()
     "Guess whether the current buffer is likely to be Ansible code."
     (string-match-p (rx (and "/ansible/" (0+ anything) "/tasks/"))
                     buffer-file-name))
@@ -525,9 +521,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
            ("\\.cabal\\'" . haskell-cabal-mode)))
 
   (use-package intero
-    :disabled
     :after haskell-mode
-    :config (add-hook 'haskell-mode-hook 'intero-mode)))
+    :hook (haskell-mode-hook . intero-mode)))
 
 (progn  ;; golang
   (use-package go-mode

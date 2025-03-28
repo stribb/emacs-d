@@ -20,3 +20,4 @@ auto-save-list/
 /tree-sitter/
 /projects
 /.emacs.desktop.lock
+flycheck_init.el
