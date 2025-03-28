@@ -72,16 +72,11 @@
   (straight-use-package-by-default t)
   (straight-built-in-pseudo-packages '(emacs nadvice python image-mode flymake xref)))
 
-(use-package project)
-
 (use-package exec-path-from-shell
   :config
   (when (string= system-type "darwin")
       (setq exec-path-from-shell-check-startup-files nil))
   (exec-path-from-shell-initialize))
-
-(use-package use-package-ensure-system-package
-  :after exec-path-from-shell)
 
 (use-package hydra)
 
@@ -369,13 +364,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
               ("C-p" . projectile-switch-project)
               ("p" . projectile-switch-project))
   :config
-  ;; Strange startup error, "Turn on helm-projectile key bindings".
-  ;; Maybe this will help.
-  (projectile-mode -1)
   (helm-projectile-on)
-  (projectile-mode 1))
-
-(use-package ripgrep)
 
 (use-package projectile-ripgrep)
 
