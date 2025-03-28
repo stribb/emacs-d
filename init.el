@@ -292,6 +292,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
   :demand t
   :config
+  (defun magit-push-to-gerrit ()
+    (interactive)
+    (magit-git-command-topdir "git push origin HEAD:refs/for/master"))
+
   (setq magit-log-section-commit-count 20)
   (define-key with-editor-mode-map "\C-cP" 'git-commit-prev-message)
   (if (executable-find "direnv")
@@ -315,6 +319,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     '("-W" "Gerrit: Mark Ready (remove WIP)" "--push-option=ready"))
   (transient-append-suffix 'magit-fetch "-t"
     '("-f" "Bypass safety checks" "--force"))
+  (transient-append-suffix 'magit-push "m"
+    '("G" "Push to gerrit" magit-push-to-gerrit))
   (magit-add-section-hook 'magit-status-sections-hook
                           'magit-insert-unpushed-to-upstream
                           'magit-insert-unpushed-to-pushremote)
