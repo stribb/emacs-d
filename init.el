@@ -342,7 +342,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :bind (("C-`" . projectile-next-project-buffer)
          ("C-~" . projectile-previous-project-buffer))
   :demand t
-  :config
+  :init
   (defun stribb/magit-status-or-dired ()
     (interactive)
     (if (magit-toplevel)
@@ -350,23 +350,31 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
       (projectile-find-file)))
 
   (setq projectile-project-search-path
-        (seq-filter #'file-directory-p '("~/pexip" "~/experimental" "~/go/src"))
+        (seq-filter #'file-directory-p '("~/experimental" "~/go/src"))
         ;; (projectile-discover-projects-in-search-path)
         projectile-switch-project-action 'stribb/magit-status-or-dired)
+  :config
   (run-with-idle-timer 20 3600 'projectile-discover-projects-in-search-path)
   (projectile-mode))
 
 (use-package helm-projectile
-  :after helm projectile
-  :bind-keymap (("S-p" . projectile-command-map)
-                ("C-c p" . projectile-command-map))
+  :after (helm projectile)
   :bind (:map projectile-command-map
               ("C-p" . projectile-switch-project)
+              ("g" . helm-projectile-rg)
               ("p" . projectile-switch-project))
+  :bind-keymap
+  (("s-p" . projectile-command-map)
+   ("C-c p" . projectile-command-map))
+  :custom
+  (helm-projectile-ignore-strategy 'search-tool)
   :config
   (helm-projectile-on)
+  (set-face-attribute 'helm-grep-file nil :foreground "#657b83" :underline t)
+  (set-face-attribute 'helm-rg-file-match-face nil :foreground "#657b83" :weight 'light))
 
 (use-package projectile-ripgrep)
+
 
 
 ;;; Programming modes
