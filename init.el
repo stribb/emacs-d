@@ -944,8 +944,10 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
   (setq whitespace-style '(face lines-tail))
   :hook (prog-mode-hook . whitespace-mode))
 
-(set-frame-font "JetBrainsMono Nerd Font-11" nil t)
-(set-fontset-font t 'unicode "JetBrainsMono Nerd Font" nil 'prepend)
+(add-hook 'after-init-hook
+          (lambda ()
+            (set-frame-font "JetBrainsMono Nerd Font-13" nil t)
+            (set-fontset-font t 'unicode "JetBrainsMono Nerd Font" nil 'prepend)))
 
 (use-package kubernetes
   :config
