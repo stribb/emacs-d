@@ -505,7 +505,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-hook 'yaml-mode-hook
             #'(lambda ()
                 (when (yaml-probably-ansible-p)
-                  (ansible-mode t)))))
+                  (ansible-mode t)
+                  (eglot)))))
 
 (use-package puppet-mode
   :mode "\\.pp\\'")
