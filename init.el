@@ -945,6 +945,9 @@ Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
 (set-frame-font "JetBrainsMono Nerd Font-11" nil t)
 (set-fontset-font t 'unicode "JetBrainsMono Nerd Font" nil 'prepend)
 
+(use-package kubernetes
+  :config
+  (fset 'k8s 'kubernetes-overview))
 
 (use-package ligature
   :config
