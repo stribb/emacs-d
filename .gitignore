@@ -21,3 +21,4 @@ auto-save-list/
 /projects
 /.emacs.desktop.lock
 flycheck_init.el
+/ielm-history.eld
