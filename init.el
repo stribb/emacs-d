@@ -920,9 +920,10 @@ With ARG, go ARG forward or backward."
  ("M-SPC" . cycle-spacing)
  ("<f1> <f1>" . display-local-help)
  ("<end>" . end-of-buffer)
- ("C-q" . forward-or-backward-sexp)
- ("M-Z" . forward-up-to-char)
- ("C-x l" . goto-line)
+ ("C-q" . old-forward-or-backward-sexp)
+ ("M-Z" . stribb/forward-up-to-char)
+ ("C-x l" . (lambda () (interactive)
+              (message "`C-x l' is obsolete! Use s-l or M-g g instead!")))
  ("C-M-r" . isearch-backward)
  ("C-r" . isearch-backward-regexp)
  ("C-M-s" . isearch-forward)
@@ -931,7 +932,6 @@ With ARG, go ARG forward or backward."
  ("<kp-add>" . next-error)
  ("<next>" . next-error-or-scroll-up)
  ("s-<down>" . next-error-or-scroll-up)
- ("M-/" . pop-tag-mark)
  ("<kp-subtract>" . previous-error)
  ("<prior>" . previous-error-or-scroll-down)
  ("s-<up>" . previous-error-or-scroll-down)
@@ -940,8 +940,10 @@ With ARG, go ARG forward or backward."
  ("s-s" . save-buffer)
  ("C-<prior>" . scroll-down-command)
  ("C-<next>" . scroll-up-command)
+ ("C-d" .  stribb/delete-char-hungry)
  ("s-," . stribb/open-init-file)
  ("H-," . stribb/open-init-file)
+ ("C-x 4 t" . stribb/transpose-windows)
  ("s-0" . text-scale-adjust)
  ("s--" . text-scale-adjust)
  ("s-=" . text-scale-adjust)
@@ -950,7 +952,6 @@ With ARG, go ARG forward or backward."
  ("M-<kp-add>" . xref-find-definitions)
  ("M-<kp-subtract>" . xref-go-back)
  ("M-z" . zap-up-to-char))
-
 
 (use-package sh-script
   :bind (:map sh-mode-map
