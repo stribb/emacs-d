@@ -8,36 +8,10 @@
        (get-buffer-process (current-buffer))
        nil "_"))))
 
-(flycheck-define-checker
-    python-mypy ""
-    :command ("mypy"
-              "--ignore-missing-imports"
-              "--python-version" "3.6"
-              source-original)
-    :error-patterns
-    ((error line-start (file-name) ":" line ": error:" (message) line-end))
-    :modes python-mode)
-(add-to-list 'flycheck-checkers 'python-mypy t)
-(flycheck-add-next-checker 'python-pylint 'python-mypy t)
-
-(use-package py-isort
-  :after python
-  :config (add-hook 'before-save-hook 'py-isort-before-save))
-
-(use-package elpy
-  :after python flycheck
-  :config
-  (elpy-enable)
-
-  ;; should autoetect
-  ;;   (setq elpy-rpc-python-command (expand-file-name "~/.pyenv/shims/python/"))
-
-  ;; flycheck > flymake
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
-
-(use-package blacken
-  :after python
-  :config (add-hook 'elpy-mode-hook 'blacken-mode))
+(use-package python-ts-mode
+  :straight nil
+  :if (treesit-language-available-p 'python) ; Only if python grammar is usable
+  :mode ("\\.py\\'" . python-ts-mode)
+  :hook (python-ts-mode-hook . (lambda () (setq fill-column 88))))
 
 (provide 'python-config)
