@@ -463,7 +463,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :config
   (add-to-list 'rainbow-identifiers-faces-to-override
                'font-lock-function-name-face)
-  (set-face-attribute 'font-lock-variable-name-face nil :foreground nil)
+  (set-face-attribute 'font-lock-variable-name-face nil :foreground 'unspecified)
   (setq-default rainbow-identifiers-choose-face-function
                 'rainbow-identifiers-cie-l*a*b*-choose-face
                 rainbow-identifiers-cie-l*a*b*-lightness 45
