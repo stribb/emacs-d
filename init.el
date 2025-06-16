@@ -907,13 +907,6 @@ With ARG, go ARG forward or backward."
 (require 'saveplace)
 (setq-default save-place t)
 
-(defun stribb/server-edit-done ()
-  "Tell the client we're done with the buffer, then kill it."
-  (interactive)
-  (save-buffer)
-  (server-edit)
-  (kill-buffer-and-window))
-
 (bind-keys  ;; Sorted by function name.
  ("<home>" . beginning-of-buffer)
  ("C-x B" . bury-buffer)
@@ -954,11 +947,20 @@ With ARG, go ARG forward or backward."
  ("M-z" . zap-up-to-char))
 
 (use-package sh-script
+  :straight nil
+  :preface
+  (defun stribb/server-edit-done ()
+    "Tell the client we're done with the buffer, then kill it."
+    (interactive)
+    (save-buffer)
+    (server-edit)
+    (kill-buffer-and-window))
   :bind (:map sh-mode-map
 	      ("C-x #" . stribb/server-edit-done)))
 
 (use-package eshell
-  :preface
+  :straight nil
+  :init
   (defun stribb/eshell-prompt-function ()
     "Custom prompt function."
     (let ((ok? eshell-last-command-status))
@@ -974,88 +976,48 @@ With ARG, go ARG forward or backward."
   (setq visual-line-fringe-indicators '(nil right-curly-arrow))
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode))
 
-(progn  ;; isearch gubbins
-  ;; http://ergoemacs.org/emacs/emacs_isearch_by_arrow_keys.html set
-  ;; arrow keys in isearch. left/right is backward/forward, up/down is
-  ;; history.
-  (define-key isearch-mode-map (kbd "<up>") 'isearch-ring-retreat )
-  (define-key isearch-mode-map (kbd "<down>") 'isearch-ring-advance )
-  (define-key isearch-mode-map (kbd "<left>") 'isearch-repeat-backward)
-  (define-key isearch-mode-map (kbd "<right>") 'isearch-repeat-forward)
+(use-package isearch
+  :straight nil
+  :bind
+  (:map isearch-mode-map
+   ("<up>" . isearch-ring-retreat)
+   ("<down>" . isearch-ring-advance)
+   ("<left>" . isearch-repeat-backward)
+   ("<right>" . isearch-repeat-forward))
+  (:map minibuffer-local-isearch-map
+   ("<left>" . isearch-reverse-exit-minibuffer)
+   ("<right>" . isearch-forward-exit-minibuffer))
+  :init
+  (defun stribb/isearch-region (&optional not-regexp no-recursive-edit)
+    "If a region is active, make this the isearch default search pattern.
 
-  (define-key minibuffer-local-isearch-map (kbd "<left>")
-    'isearch-reverse-exit-minibuffer)
-  (define-key minibuffer-local-isearch-map (kbd "<right>")
-    'isearch-forward-exit-minibuffer))
+    Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function
+    args."
+    (interactive "P\np")
+    (when (use-region-p)
+      (let ((search (buffer-substring-no-properties
+                     (region-beginning)
+                     (region-end))))
+        (setq deactivate-mark t)
+        (isearch-yank-string search))))
+  :config
+  (dolist (f '(isearch-forward-regexp
+               isearch-forward
+               isearch-backward-regexp
+               isearch-backward))
+    (advice-add f :after 'stribb/isearch-region)))
 
-(defun stribb/isearch-region (&optional not-regexp no-recursive-edit)
-  "If a region is active, make this the isearch default search pattern.
-
-Arguments NOT-REGEXP and NO-RECURSIVE-EDIT mirror the isearch function args."
-  (interactive "P\np")
-  (when (use-region-p)
-    (let ((search (buffer-substring-no-properties
-                   (region-beginning)
-                   (region-end))))
-      (setq deactivate-mark t)
-      (isearch-yank-string search))))
-
-(dolist (f '(isearch-forward-regexp
-             isearch-forward
-             isearch-backward-regexp
-             isearch-backward))
-  (advice-add f :after 'stribb/isearch-region))
-
-(progn  ;; help-mode hijinks
-  (defun stribb/help-mode-revert-buffer (ignore-auto noconfirm)
+(use-package help-mode
+  :straight nil
+  :init
+  (defun stribb/help-mode-revert-buffer (&rest _)
     "Unconditionally revert `help-mode' buffer."
     (interactive)
     (help-mode-revert-buffer nil t))
 
-  (defun stribb/help-mode-setup ()
-    "Set up `help-mode' my way."
-    (setq revert-buffer-function #'stribb/help-mode-revert-buffer))
-
-  (add-hook 'help-mode-hook #'stribb/help-mode-setup))
-
-(defun transpose-windows ()
-  "Switch this window for the other window in the same frame."
-  (interactive)
-  (let ((this-buffer (window-buffer (selected-window)))
-        (other-buffer (prog2
-                          (other-window +1)
-                          (window-buffer (selected-window))
-                        (other-window -1))))
-    (switch-to-buffer other-buffer)
-    (switch-to-buffer-other-window this-buffer)
-    (other-window -1)))
-(define-key ctl-x-4-map (kbd "t") 'transpose-windows)
-
-(defun forward-up-to-char (arg char)
-  "Move forward to the ARGth occurence of CHAR."
-  (interactive (list (prefix-numeric-value current-prefix-arg)
-                     (read-char "Go to char: " t)))
-  ;; Avoid "obsolete" warnings for translation-table-for-input.
-  (with-no-warnings
-    (if (char-table-p translation-table-for-input)
-        (setq char (or (aref translation-table-for-input char) char))))
-  (search-forward (char-to-string char) nil nil arg)
-  (left-char))
-
-(defun stribb/just-save-buffer ()
-  "Mask out save hooks and save the buffer."
-  (interactive)
-  (let (before-save-hook
-        write-contents-functions
-        after-save-hook)
-    (save-buffer)))
-
-(defun vc-rename-visited-file (new)
-  "Rename the file this buffer is visiting to NEW."
-  (interactive (list (read-file-name "Rename to: ")))
-  (when (not (buffer-file-name))
-    (error "This buffer is not visiting a file"))
-  (vc-rename-file (buffer-file-name) new))
+  :hook
+  (help-mode-hook . (lambda ()
+                      (setq revert-buffer-function #'stribb/help-mode-revert-buffer))))
 
 (midnight-mode)
 (midnight-delay-set 'midnight-delay "03:00")
