@@ -141,11 +141,6 @@
              :repo "bazelbuild/emacs-bazel-mode"
              :files (:defaults)))
 
-(use-package delight
-  :config
-  (delight '((emacs-lisp-mode ("Elisp" (lexical-binding ":Lex" ":Dyn")) :major)
-             (eldoc-mode nil "eldoc"))))
-
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
