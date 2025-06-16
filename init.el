@@ -174,10 +174,6 @@
   ("C-<" . mc/mark-previous-like-this)
   ("C-c C-=" . mc/mark-all-like-this))
 
-(use-package which-key
-  :delight
-  :config (which-key-mode))
-
 (use-package num3-mode
   :straight (num3-mode :host github :repo "emacs-straight/num3-mode"
                        :fork (:host github
@@ -374,8 +370,16 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package projectile
   :delight '(:eval (concat " " (projectile-project-name)))
-  :bind (("C-`" . projectile-next-project-buffer)
-         ("C-~" . projectile-previous-project-buffer))
+  :bind-keymap
+  (("s-p" . projectile-command-map)
+   ("C-c p" . projectile-command-map))
+  :bind
+  (("C-`" . projectile-next-project-buffer)
+   ("C-~" . projectile-previous-project-buffer))
+  (:map projectile-command-map
+              ("C-p" . projectile-switch-project)
+              ("g" . helm-projectile-rg)
+              ("p" . projectile-switch-project))
   :demand t
   :init
   (defun stribb/magit-status-or-dired ()
@@ -472,12 +476,18 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :delight
   :config (ws-butler-global-mode))
 
-;; (defun flycheck-virtualenv-setup (&rest args) nil)
 (use-package flycheck
-  :config
-  (require 'flycheck-virtualenv)
-  ;; (add-hook 'flycheck-mode-hook #'flycheck-virtualenv-setup)
-  (global-flycheck-mode))
+  :demand t
+  :init
+  (global-flycheck-mode 1)
+
+  (defun stribb/ensure-flycheck-over-flymake ()
+  "Ensure `flymake-mode' is disabled if `flycheck-mode' is active."
+  ;; flycheck-mode should be active due to (global-flycheck-mode 1)
+  (when (and (boundp 'flycheck-mode) flycheck-mode)
+    (flymake-mode -1)))
+
+  (add-hook 'prog-mode-hook #'stribb/ensure-flycheck-over-flymake))
 
 (use-package elisp-format
   :commands (elisp-format-file elisp-format-region elisp-format-buffer)
@@ -488,6 +498,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   ;; :hook
   ;; ((emacs-lisp-mode-hook lisp-interaction-mode-hook ielm-mode-hook) . turn-on-eldoc-mode)
   :config (global-eldoc-mode))
+
+(use-package buttercup)
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -563,12 +575,11 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :mode "\\.go\\'\\|/go\\.mod"
     :config
     (setq gofmt-command "goimports")
-    (add-hook 'before-save-hook 'gofmt-before-save)
-    :hook (go-mode-hook . (lambda () (setq fill-column 95))))
-
-  (use-package go-eldoc
-    :after go-mode
-    :config (add-hook 'go-mode-hook 'go-eldoc-setup)))
+    (defun stribb/go-mode ()
+      (setq-local fill-column 95
+                  go-ts-mode-indent-offset 4))
+    :hook ((go-ts-mode-hook . stribb/go-mode)
+           (go-mode-hook . stribb/go-mode))))
 
 (use-package asdf
   :straight (asdf :type git :host github :repo "tabfugnic/asdf.el")
