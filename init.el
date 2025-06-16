@@ -57,34 +57,60 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq straight-use-package-by-default t)
+(setq straight-built-in-pseudo-packages
+      '(emacs nadvice python image-mode project flymake xref))
+(setq straight-recipe-repositories
+      '(org-elpa melpa gnu-elpa-mirror el-get emacsmirror-mirror))
+
 
 ;;; General packages
 
 ;;; https://github.com/jwiegley/use-package
+;;
+;; :preface
+;;   Timing: Before both :init and :config
+;;   Usage: Define helper functions/macros needed by other parts of the
+;;     declaration.
+;;
+;; :init
+;;   Timing: Before package loading
+;;   Usage: Set variables or configurations required before initialization.
+;;
+;; :config
+;;   Timing: After package loading
+;;   Usage: Activate modes, add hooks, or perform setup that depends on the
+;;     package being loaded.
+;;
+(setq use-package-hook-name-suffix nil)
+(setq use-package-compute-statistics t)
 
-(use-package use-package
-  :config
-  (setq use-package-hook-name-suffix nil
-        use-package-compute-statistics t))
+
 
 (setq flycheck-emacs-lisp-load-path 'inherit)
-(require 'straight)
 
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  (require 'use-package-delight))
 (require 'bind-key)
 
-(use-package straight
-  :custom
-  ;; https://github.com/radian-software/straight.el/issues/1146
-  (straight-use-package-by-default t)
-  (straight-built-in-pseudo-packages '(emacs nadvice python image-mode flymake xref)))
-
 (use-package exec-path-from-shell
+  :when (or (daemonp)
+            (memq window-system '(mac ns)))
   :config
-  (when (string= system-type "darwin")
-      (setq exec-path-from-shell-check-startup-files nil))
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
+                 "LC_CTYPE" "LC_ALL" "PYENV_ROOT" "PYENV_SHELL" "PIPENV_PIPFILE"))
+    (add-to-list 'exec-path-from-shell-variables var))
+  (when (eq system-type 'darwin)
+    (setq exec-path-from-shell-check-startup-files nil))
   (exec-path-from-shell-initialize))
+
+(use-package delight
+  :init
+  (require 'use-package-delight)
+  :config
+  (delight '((emacs-lisp-mode ("Elisp" (lexical-binding ":Lex" ":Dyn")) :major)
+             (eldoc-mode nil "eldoc"))))
 
 (use-package hydra)
 
