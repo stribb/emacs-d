@@ -8,27 +8,35 @@
 ;; Speed up init.
 (defvar file-name-handler-alist-old file-name-handler-alist)
 
-(setq debug-on-error t
-      file-name-handler-alist nil
-      message-log-max 16384
-      gc-cons-threshold 402653184
-      gc-cons-percentage 0.6
-      auto-window-vscroll nil)
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (setq debug-on-error nil
-                    file-name-handler-alist file-name-handler-alist-old
-                    gc-cons-threshold 800000
-                    gc-cons-percentage 0.1)
-              (garbage-collect)) t)
+(defun stribb/optimize-startup ()
+  "Optimize Emacs startup performance."
+  (setq
+   debug-on-error t
+   file-name-handler-alist nil
+   message-log-max 16384
+   gc-cons-threshold 4026531840 ; Start with a high threshold
+   gc-cons-percentage 10.5
+   auto-window-vscroll nil)
+  (dolist (d '("config" "elisp-misc"))
+    (add-to-list 'load-path (concat user-emacs-directory d)))
+  (setq inhibit-startup-screen t)
+  (add-hook 'after-init-hook #'stribb/restore-vars :append))
 
-(dolist (d '("config" "elisp-misc"))
-  (add-to-list 'load-path (concat user-emacs-directory d)))
+(defun stribb/restore-vars ()
+  "Restore variables and perform post-init tasks."
+  (setq
+   debug-on-error nil
+   file-name-handler-alist file-name-handler-alist-old
+   gc-cons-threshold 800000    ; Reset to a more reasonable value
+   gc-cons-percentage 0.1)
+  (run-with-idle-timer 10 nil #'garbage-collect))
 
-(setq inhibit-startup-screen t)
+(stribb/optimize-startup)
 
-;;; Straight.
+(auto-compression-mode t)
+(desktop-save-mode t)
 
+;; Straight.
 ;; This is necessary to tell `straight' where git is.
 (add-to-list 'exec-path "/usr/local/bin" t)
 (setenv "PATH" (string-join exec-path ":"))
