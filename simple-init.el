@@ -1,7 +1,6 @@
 ;; Use emacs -Q -l ~/.emacs.d/simple-init.el
 
 (load "~/.emacs.d/straight/repos/straight.el/bootstrap.el")
-(load "~/.emacs.d/straight/repos/use-package/bind-key.el")
 
 (use-package straight
   :custom

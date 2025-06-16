@@ -390,21 +390,15 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
   (setq projectile-project-search-path
         (seq-filter #'file-directory-p '("~/experimental" "~/go/src"))
-        ;; (projectile-discover-projects-in-search-path)
         projectile-switch-project-action 'stribb/magit-status-or-dired)
   :config
-  (run-with-idle-timer 20 3600 'projectile-discover-projects-in-search-path)
-  (projectile-mode))
+  (projectile-mode 1))
 
 (use-package helm-projectile
   :after (helm projectile)
-  :bind (:map projectile-command-map
-              ("C-p" . projectile-switch-project)
-              ("g" . helm-projectile-rg)
-              ("p" . projectile-switch-project))
-  :bind-keymap
-  (("s-p" . projectile-command-map)
-   ("C-c p" . projectile-command-map))
+  :bind
+  (:map projectile-command-map
+        ("g" . helm-projectile-rg))
   :custom
   (helm-projectile-ignore-strategy 'search-tool)
   :config
@@ -412,21 +406,97 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (set-face-attribute 'helm-grep-file nil :foreground "#657b83" :underline t)
   (set-face-attribute 'helm-rg-file-match-face nil :foreground "#657b83" :weight 'light))
 
-(use-package projectile-ripgrep)
-
 
 
-;;; Programming modes
+(defun stribb/read-file (filename &optional notrim? noexpand?)
+  "Read FILENAME into a string.
+
+If NOTRIM? refrain from trimming the contents.
+If NOEXPAND? don't expand the file name."
+  (with-temp-buffer
+    (insert-file-contents (funcall (if noexpand? 'identity 'expand-file-name) filename))
+    (funcall (if notrim? 'identity 'string-trim)
+             (buffer-string))))
+
+(defun stribb/gptel-newline-or-original ()
+    "Execute the original <return> command from the markdown-mode buffer."
+    (interactive)
+    (let ((original-command (keymap-lookup markdown-mode-map (kbd "<return>"))))
+      (if original-command
+          (call-interactively original-command)
+        ;; Fallback to newline if original binding isn't found
+        (newline))))
+(use-package gptel
+  :init
+  (require 'gptel-context)
+  :bind
+  ( ("C-c g s" . gptel-send)
+    ("C-c g r" . gptel-rewrite)
+    ("C-c g a" . gptel-add)
+    :map gptel-mode-map
+    ("C-c C-c" . gptel-send)
+    ("C-<return>" . gptel-send))
+  :init
+  (require 'gemini-models)
+  (require 'gptel-tools)
+  :config
+  (bind-key "S-<return>" #'stribb/gptel-newline-or-original gptel-mode-map)
+  (setq gptel-tools nil)
+  (setq gptel-backend
+        (gptel-make-gemini
+            "Gemini"
+          :key #'(lambda () (stribb/read-file "~/.gemini.key"))
+          :stream t))
+  (setq gptel-model 'gemini-2.5-flash-preview-05-20))
+
+(use-package treesit-auto
+  :if (treesit-available-p) ; Only if tree-sitter is generally available
+  :demand t ; Load it eagerly if available
+  :config
+  (global-treesit-auto-mode)
+  ;; You can tell it to install specific languages if they are missing
+  (setq treesit-auto-install 'prompt) ; or t to always install, or 'prompt
+  ;; Ensure Python is installed if you go this route and don't manage it manually
+  (unless (treesit-language-available-p 'python)
+    (treesit-install-language-grammar 'python)))
 
 ;; The track-changes package is needed for eglot.
 (use-package track-changes
     :straight (track-changes :type git :host github :repo "emacs-straight/track-changes"))  ;; WHY??!
 
 (use-package eglot
-  :bind ("s-<return>" . eglot-code-action-quickfix)
+  :demand t
+  :bind (("s-<return>" . eglot-code-action-quickfix)
+         ("M-r" . eglot-rename))
+  :hook
+  ((python-mode-hook python-ts-mode-hook) . eglot-ensure)
+  ((go-mode-hook go-ts-mode-hook) . eglot-ensure)
   :config
+  (add-to-list 'eglot-stay-out-of 'flymake)
+
   (setq eglot-workspace-configuration
-        '((:gopls . ((gofumpt . t))))))
+        '((:gopls . ((gofumpt . t)))))
+  (add-to-list 'eglot-server-programs
+               `((python-ts-mode python-mode) .
+                 ,(eglot-alternatives '("pylsp"
+                                        "ruff-lsp"))))
+  (defun stribb/setup-format-on-save-for-eglot-buffer ()
+    "Add `eglot-format-buffer' to `before-save-hook' for the current buffer."
+    (add-hook 'before-save-hook #'eglot-format-buffer nil 'local))
+
+  (add-hook 'eglot-managed-mode-hook #'stribb/setup-format-on-save-for-eglot-buffer))
+
+(use-package subword
+  :straight nil
+  :hook
+  ((prog-mode-hook markdown-mode-hook yaml-mode-hook) . (lambda () (subword-mode t))))
+
+(use-package jq-mode
+  :mode "\\.jq\\'"
+  :interpreter "jq")
+
+(use-package restclient
+  :interpreter "restclient")
 
 ;; It's like a general purpose paredit-mode.
 (use-package smartparens
@@ -597,7 +667,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :load-path "straight/build/distel/elisp"
     :after erlang
     :config
-    (require 'distel)
     (distel-setup))
 
   (use-package company-distel
@@ -672,13 +741,15 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 ;;; Non-package config.
 
 ;;; Old fogey mode.
-(progn
-  (when (fboundp 'tool-bar-mode)
-    (tool-bar-mode -1))
-  (when (fboundp 'scroll-bar-mode)
-    (scroll-bar-mode -1))
-  (when (fboundp 'horizontal-scroll-bar-mode)
-    (horizontal-scroll-bar-mode -1)))
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Disabling fogeyphobic UI elements...")
+            (when (fboundp 'tool-bar-mode)
+              (tool-bar-mode -1))
+            (when (fboundp 'scroll-bar-mode)
+              (scroll-bar-mode -1))
+            (when (fboundp 'horizontal-scroll-bar-mode)
+              (horizontal-scroll-bar-mode -1))))
 
 (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
@@ -717,9 +788,26 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (dolist (d dirs)
     (dir-locals-set-directory-class (expand-file-name d) 'readonly)))
 
+
+(defun stribb/delete-char-hungry ()
+  "Delete char forward, joining lines and deleting indentation at EOL.
+
+Acts like `delete-char'.  However, when deleting a newline (i.e.,
+when called at the end of a line), this command also deletes any
+subsequent horizontal whitespace."
+  (interactive)
+  (let ((was-at-eol (eolp)))
+    ;; Use the original delete-char command for the primary action.
+    (call-interactively #'delete-char)
+    ;; If we just deleted a newline, clean up the following indentation.
+    (when was-at-eol
+      ;; Find the end of the whitespace streak after point.
+      (delete-char (save-excursion (skip-chars-forward "[:blank:]"))))))
+
 ;; TODO: use smartparens
-(defun forward-or-backward-sexp (&optional arg)
+(defun old-forward-or-backward-sexp (&optional arg)
   "Go to the matching parenthesis character if one is adjacent to point.
+
 With ARG, go ARG forward or backward."
   (interactive "^p")
   (cond ((looking-at "\\s(") (forward-sexp arg))
@@ -769,14 +857,48 @@ With ARG, go ARG forward or backward."
   (interactive)
   (let* ((buffer (or (buffer-base-buffer) (current-buffer)))
          (mode (with-current-buffer buffer major-mode))
-         (filename (if (apply #'provided-mode-derived-p mode non-file-modes)
+         (filename (if (provided-mode-derived-p mode non-file-modes)
                        default-directory
                      (buffer-file-name buffer))))
     (when filename
       (kill-new filename)
       (message "Copied buffer file name '%s' to the clipboard." filename))))
-
 (defalias 'bfn 'prelude-copy-file-name-to-clipboard)
+
+
+(defmacro assert (test-form)
+  "Asserts that TEST-FORM evaluate to non-nil."
+  `(unless ,test-form
+     (error "Assertion failed: %s" (format "%s" ',test-form))))
+
+(defun stribb/transpose-windows ()
+  "Switch this window for the next window in the same frame."
+  (interactive)
+  (when-let* ((other-window (next-window))
+	      (this-window (selected-window))
+	      (new-selected-buffer (window-buffer other-window))
+	      (new-other-buffer (window-buffer this-window)))
+    (assert (not (eq this-window other-window)))
+    (set-window-buffer this-window new-selected-buffer)
+    (set-window-buffer other-window new-other-buffer)
+    (select-window other-window)))
+
+(defun stribb/forward-up-to-char (arg char)
+  "Move forward to the ARGth occurrence of CHAR."
+  (interactive
+   (list (prefix-numeric-value current-prefix-arg)
+         (read-char "Go to char: ")))
+  (search-forward (char-to-string char) nil nil arg)
+  (forward-char -1))
+
+(defun stribb/just-save-buffer ()
+  "Mask out save hooks and save the buffer."
+  (interactive)
+  (let (before-save-hook
+        write-contents-functions
+        after-save-hook)
+    (save-buffer)))
+
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (require 'uniquify)
