@@ -127,6 +127,10 @@
   (setq fish-completion-fallback-on-bash-p t)
   (global-fish-completion-mode))
 
+(use-package which-key
+  :delight
+  :config (which-key-mode))
+
 (use-package doom-modeline
   :config (doom-modeline-mode 1))
 
