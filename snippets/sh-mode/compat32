@@ -1,0 +1,20 @@
+# -*- mode: snippet -*-
+# name: compat32
+# key: compat32
+# --
+#!/usr/bin/env bash
+# Copyright (c) YYYY Arista Networks, Inc.  All rights reserved.
+# Arista Networks, Inc. Confidential and Proprietary.
+# Subject to Arista Networks, Inc.'s EULA.
+# FOR INTERNAL USE ONLY. NOT FOR DISTRIBUTION.
+#
+# <description of the command>
+
+# Stick to Bash 3.2 compabibility for the benefit of MacOS
+printf '%s\n' '3 2' "${BASH_VERSINFO[*]}" | sort -cV \
+    || { echo "Error: Bash version 3.2 or higher is required" >&2; exit 1; }
+
+# Enable compat32 mode when possible (bash 3.2 doesn't have a compat32 flag!)
+if ((BASH_VERSINFO[0] >= 4)); then
+    shopt -s compat32
+fi
