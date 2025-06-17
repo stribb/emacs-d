@@ -33,8 +33,10 @@
 
 (stribb/optimize-startup)
 
-(auto-compression-mode t)
-(desktop-save-mode t)
+(auto-compression-mode 1)
+(desktop-save-mode 1)
+(editorconfig-mode 1)
+(column-number-mode 1)
 
 ;; Straight.
 ;; This is necessary to tell `straight' where git is.
