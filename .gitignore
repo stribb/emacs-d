@@ -25,3 +25,4 @@ flycheck_init.el
 /.emacs.desktop.bak
 /straight/*
 !/straight/versions/
+**/flycheck_**
