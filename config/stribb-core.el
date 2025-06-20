@@ -871,8 +871,11 @@ With ARG, go ARG forward or backward."
 	eshell-prompt-function #'stribb/eshell-prompt-function
 	eshell-hist-ignoredups t))
 
-(progn  ;; visual-line mode
-  (setq visual-line-fringe-indicators '(nil right-curly-arrow))
+(use-package simple
+  :straight nil
+  :custom
+  (visual-line-fringe-indicators '(nil right-curly-arrow))
+  :config
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode))
 
 (use-package isearch
