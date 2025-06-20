@@ -473,6 +473,10 @@ If NOEXPAND? don't expand the file name."
   :hook
   ((python-mode-hook python-ts-mode-hook) . eglot-ensure)
   ((go-mode-hook go-ts-mode-hook) . eglot-ensure)
+  :custom-face
+  (eglot-code-action-suggestion-face ((t (:bold t :underline t))))
+  (eglot-code-action-indicator-face ((t (:bold t :underline t))))
+
   :config
   (add-to-list 'eglot-stay-out-of 'flymake)
 
@@ -486,7 +490,9 @@ If NOEXPAND? don't expand the file name."
     "Add `eglot-format-buffer' to `before-save-hook' for the current buffer."
     (add-hook 'before-save-hook #'eglot-format-buffer nil 'local))
 
-  (add-hook 'eglot-managed-mode-hook #'stribb/setup-format-on-save-for-eglot-buffer))
+  (add-hook 'eglot-managed-mode-hook #'stribb/setup-format-on-save-for-eglot-buffer)
+  (when (eq window-system 'ns)
+    (define-key key-translation-map (kbd "s-<mouse-1>") (kbd "<mouse-2>"))))
 
 (use-package subword
   :straight nil
