@@ -691,23 +691,6 @@ If NOEXPAND? don't expand the file name."
   (require 'ls-lisp))
 
 
-(use-package ansi-color
-  ;; Compile mode deserves some ANSI colour love
-  :hook (compilation-filter . ansi-color-compilation-filter))
-
-;; Non-local Emacs files should start read-only
-(dir-locals-set-class-variables
- 'readonly
- '((nil . ((eval . (when buffer-file-name
-                     (setq-local view-no-disable-on-exit t)
-                     (view-mode-enter)))))))
-(let ((dirs '("/usr/local/src/emacs" "/usr/local/share/emacs"
-             "/usr/share/emacs" "~/.emacs.d/elpa/"
-             "/Applications/Emacs.app/Contents/Resources/lisp/")))
-  (dolist (d dirs)
-    (dir-locals-set-directory-class (expand-file-name d) 'readonly)))
-
-
 (defun stribb/delete-char-hungry ()
   "Delete char forward, joining lines and deleting indentation at EOL.
 
