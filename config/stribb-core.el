@@ -621,16 +621,17 @@ If NOEXPAND? don't expand the file name."
 ;;     :after haskell-mode
 ;;     :hook (haskell-mode-hook . intero-mode)))
 
-(progn  ;; golang
-  (use-package go-mode
-    :mode "\\.go\\'\\|/go\\.mod"
-    :config
-    (setq gofmt-command "goimports")
-    (defun stribb/go-mode ()
-      (setq-local fill-column 95
-                  go-ts-mode-indent-offset 4))
-    :hook ((go-ts-mode-hook . stribb/go-mode)
-           (go-mode-hook . stribb/go-mode))))
+(use-package go-mode
+  :mode "\\.go\\'\\|/go\\.mod"
+  :config
+  (setq gofmt-command "goimports")
+  (defun stribb/go-mode ()
+    (when (local-variable-p 'fill-column)
+      (setq fill-column 95))
+    (when (local-variable-p 'go-ts-mode-indent-offset)
+      (setq go-ts-mode-indent-offset) 4))
+  :hook ((go-ts-mode-hook . stribb/go-mode)
+         (go-mode-hook . stribb/go-mode)))
 
 (use-package asdf
   :straight (asdf :type git :host github :repo "tabfugnic/asdf.el")
