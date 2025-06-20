@@ -1,4 +1,4 @@
-;;; org-config --- andstrib's org-mode configuration
+;;; org-config --- andstrib's org-mode configuration  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -19,5 +19,5 @@
 ;; Experimenting with visual-line-mode for text-modes.
 ;; (add-hook 'org-mode-hook #'turn-on-auto-fill)
 
-(provide 'org-config)
-;;; org-config.el ends here
+(provide 'stribb-org)
+;;; stribb-org.el ends here

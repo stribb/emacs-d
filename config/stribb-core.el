@@ -252,10 +252,10 @@
   (add-hook 'eshell-post-command-hook #'stribb/eshell-env-to-path))
 
 (use-package org
-  :init (load "org-config")
+  :straight nil
+  :init (require 'stribb-org)
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c l" . org-store-link)
-         ;; ("C-c C-," . org-insert-structure-template)  <-- already default
          ("C-c C-x TAB" . org-clock-in)))
 
 (use-package htmlize
