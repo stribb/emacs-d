@@ -545,8 +545,6 @@ If NOEXPAND? don't expand the file name."
 
 (use-package eldoc
   :delight
-  ;; :hook
-  ;; ((emacs-lisp-mode-hook lisp-interaction-mode-hook ielm-mode-hook) . turn-on-eldoc-mode)
   :config (global-eldoc-mode))
 
 (use-package buttercup)
