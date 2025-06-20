@@ -585,24 +585,23 @@ If NOEXPAND? don't expand the file name."
   :mode ("\\.jso?n\\'" . json-mode))
 
 (use-package yaml-mode
-  :mode ("\\.ya?ml\\|\\.crd\\'" . yaml-mode)
-  :bind (:map yaml-mode-map ("C-m" . newline-and-indent))
-  :config
-  (add-hook 'yaml-mode-hook 'highlight-indentation-mode)
-  (add-to-list 'magic-mode-alist '("^# vi: set ft=yaml" . yaml-mode)))
+  :mode (("\\.ya?ml\\'" . yaml-mode)
+         ("\\.crd\\'" . yaml-mode))
+  :magic ("^# vi: set ft=yaml" . yaml-mode)
+  :bind (:map yaml-mode-map ("C-m" . newline-and-indent)))
 
-(use-package ansible
-  :preface
-  (defun yaml-probably-ansible-p ()
-    "Guess whether the current buffer is likely to be Ansible code."
-    (string-match-p (rx (and "/ansible/" (0+ anything) "/tasks/"))
-                    buffer-file-name))
-  :config
-  (add-hook 'yaml-mode-hook
-            #'(lambda ()
-                (when (yaml-probably-ansible-p)
-                  (ansible-mode t)
-                  (eglot)))))
+(use-package ansible  ; a minor mode
+  :after yaml-mode
+  :init
+  (defun stribb-yaml--enable-ansible-if-needed ()
+    "Activate `ansible-mode` and `eglot` for Ansible project files."
+    ;; Use `when-let` to make the check cleaner and avoid errors if
+    ;; buffer-file-name is nil (for non-file buffers).
+    (when-let* ((filename (buffer-file-name))
+                ((string-match-p (rx "/ansible/" (0+ anything) "/tasks/") filename)))
+      (ansible-mode 1)
+      (eglot-ensure)))
+    :hook (yaml-mode . stribb-yaml--enable-ansible-if-needed))
 
 (use-package puppet-mode
   :mode "\\.pp\\'")
