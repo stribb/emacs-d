@@ -220,21 +220,24 @@
          ("C-x C-v" . find-alternate-file)
          ("C-x C-d" . helm-browse-project)
          ("C-x b" . helm-buffers-list)
+         ("C-c i" . helm-imenu)
+         ("M-s o" . helm-occur)
          ("C-x r b" . helm-filtered-bookmarks)
          ("C-x C-r" . helm-recentf)
          ("C-h a" . helm-apropos)
          :map helm-map
          ("<tab>" . helm-execute-persistent-action)
          ("C-i" . helm-execute-persistent-action)
-         ("C-z" . helm-select-action))
-  :demand t
-  :config
+         ("C-z" . helm-select-action)))
+
+(use-package eshell
+  :init
   (defun stribb/helm-eshell-completions nil
     (eshell-cmpl-initialize)
     (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
     (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))
-  (add-hook 'eshell-mode-hook #'stribb/helm-eshell-completions)
-  (helm-mode 1))
+  :config
+  (add-hook 'eshell-mode-hook #'stribb/helm-eshell-completions))
 
 (use-package helm-rg  ;; ripgrep
   :if (executable-find "rg")
