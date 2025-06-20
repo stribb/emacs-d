@@ -1,4 +1,4 @@
-;;; For custom's use only!
+;;; For custom's use only!  -*- lexical-binding: t; -*-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

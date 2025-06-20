@@ -1,4 +1,4 @@
-;;; package --- loader for the stribb configs -*- lexical-binding: nil; -*-
+;;; package --- loader for the stribb configs -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; This file loads the modular components of my personal Emacs setup.
 

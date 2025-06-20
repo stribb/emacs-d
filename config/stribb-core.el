@@ -1,4 +1,4 @@
-;;; package --- stribb-core config
+;;; package --- stribb-core config  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Make Emacs more comfortable to use.

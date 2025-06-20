@@ -1,4 +1,4 @@
-;;; package --- stribb-ui -*- lexical-binding: nil; -*-
+;;; package --- stribb-ui -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;;

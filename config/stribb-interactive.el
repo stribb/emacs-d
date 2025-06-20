@@ -1,4 +1,4 @@
-;;; package --- stribb-interactive -*- lexical-binding: nil; -*-
+;;; package --- stribb-interactive -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;; This file contains interactive-only settings, including:
