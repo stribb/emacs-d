@@ -203,6 +203,7 @@
 
 (use-package popup)
 
+(add-to-list 'native-comp-jit-compilation-deny-list "helm")
 ;; C-x c is the default key binding for helm-command-prefix-key.
 (use-package helm
   :delight
