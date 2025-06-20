@@ -131,9 +131,6 @@
   :delight
   :config (which-key-mode))
 
-(use-package doom-modeline
-  :config (doom-modeline-mode 1))
-
 (use-package bazel
   :straight (bazel
              :type git
@@ -265,12 +262,6 @@
   :after org
   :bind (("C-c C-x p" . org-pomodoro)
          ("C-c C-x C-p" . org-pomodoro)))
-
-(use-package solarized-theme
-  :config
-  (setq custom-enabled-themes '(solarized-dark solarized-light)
-        solarized-high-contrast-mode-line t)
-  (load-theme 'solarized-light t))
 
 ;; https://github.com/alphapapa/unpackaged.el#hydra
 (use-package smerge-mode
@@ -533,22 +524,6 @@ If NOEXPAND? don't expand the file name."
 (use-package dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
 
-;; Thanks to https://amitp.blogspot.com/2014/04/emacs-rainbow-identifiers.html
-(use-package rainbow-identifiers
-  :hook (prog-mode-hook . rainbow-identifiers-mode)
-  :config
-  (add-to-list 'rainbow-identifiers-faces-to-override
-               'font-lock-function-name-face)
-  (set-face-attribute 'font-lock-variable-name-face nil :foreground 'unspecified)
-  (setq-default rainbow-identifiers-choose-face-function
-                'rainbow-identifiers-cie-l*a*b*-choose-face
-                rainbow-identifiers-cie-l*a*b*-lightness 45
-                rainbow-identifiers-cie-l*a*b*-saturation 40
-                rainbow-identifiers-cie-l*a*b*-color-count 15))
-
-(use-package rainbow-delimiters
-  :hook (prog-mode-hook . rainbow-delimiters-mode))
-
 (use-package ws-butler
   :delight
   :config (ws-butler-global-mode))
@@ -702,24 +677,6 @@ If NOEXPAND? don't expand the file name."
 
 
 ;;; Non-package config.
-
-;;; Old fogey mode.
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Disabling fogeyphobic UI elements...")
-            (when (fboundp 'tool-bar-mode)
-              (tool-bar-mode -1))
-            (when (fboundp 'scroll-bar-mode)
-              (scroll-bar-mode -1))
-            (when (fboundp 'horizontal-scroll-bar-mode)
-              (horizontal-scroll-bar-mode -1))))
-
-(add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
-
-;; Line numbers
-(setq-default display-line-numbers nil)
-(add-hook 'prog-mode-hook (lambda () (setq display-line-numbers t)))
-
 (defmacro prog0 (&rest body)
   "Evaluate BODY forms in turn, returning null."
   `(prog1 nil ,@body))
@@ -985,47 +942,9 @@ With ARG, go ARG forward or backward."
 (midnight-mode)
 (midnight-delay-set 'midnight-delay "03:00")
 
-(setq-default default-frame-alist
-              (append '((tool-bar-lines . 0))
-                      (when (display-graphic-p)
-                        '((alpha-background . 100)
-                          (height . 70)
-                          (width . 103)))))
-
-(use-package whitespace
-  :config
-  (setq whitespace-style '(face lines-tail))
-  :hook (prog-mode-hook . whitespace-mode))
-
-(add-hook 'after-init-hook
-          (lambda ()
-            (set-frame-font "JetBrainsMono Nerd Font-13" nil t)
-            (set-fontset-font t 'unicode "JetBrainsMono Nerd Font" nil 'prepend)))
-
 (use-package kubernetes
   :config
   (fset 'k8s 'kubernetes-overview))
-
-(use-package ligature
-  :config
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  ;; Enable all Cascadia Code ligatures in programming modes
-  (ligature-set-ligatures
-   'prog-mode
-   ;; Copied from https://www.jetbrains.com/lp/mono/#ligatures
-   (split-string "-- --- == === != !== =!= =:= =/= <= >= && &&& &=
- ++ +++ *** ;; !! ?? ??? ?: ?. ?= <: :< :> >: <:< <> <<< >>> <<
- >> || -| _|_ |- ||- |= ||= ## ### #### #{ #[ ]# #( #? #_ #_( #:
- #! #= ^= <$> <$ $> <+> <+ +> <*> <* *> </ </> /> <!-- <#-- -->
- -> ->> <<- <- <=< =<< <<= <== <=> <==> ==> => =>> >=> >>= >>- >-
- -< -<< >-> <-< <-| <=| |=> |-> <-> <~~ <~ <~> ~~ ~~> ~> ~- -~ ~@ [||]
- |] [| |} {| [< >] |> <| ||> <|| |||> <||| <|> ... .. .= ..< .?
- :: ::: := ::= :? :?> // /// /* */ /= //= /== @_ __ ??? <:< ;;;"))
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
 
 ;; Disable because we're not using GPG as an SSH agent everywhere.
 (when nil
