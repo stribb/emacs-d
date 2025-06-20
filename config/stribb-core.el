@@ -978,11 +978,7 @@ With ARG, go ARG forward or backward."
 ;; Bash and zsh fc:
 (add-to-list 'auto-mode-alist '("/bash-fc|/tmp/zsh" . sh-mode))
 
-(if (or (not (boundp 'server-process))
-        (not server-process))
-    (server-start))
-
-(message "Init finished: %d GCs, startup time %s" gcs-done (emacs-init-time))
+(message "Core finished: %d GCs, startup time %s" gcs-done (emacs-init-time))
 
 (provide 'stribb-core)
 ;;; stribb-core.el ends here
