@@ -34,7 +34,6 @@
 (stribb/optimize-startup)
 
 (auto-compression-mode 1)
-(desktop-save-mode 1)
 (editorconfig-mode 1)
 (column-number-mode 1)
 
