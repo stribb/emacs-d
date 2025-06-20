@@ -444,13 +444,11 @@ If NOEXPAND? don't expand the file name."
   (setq gptel-model 'gemini-2.5-flash-preview-05-20))
 
 (use-package treesit-auto
-  :if (treesit-available-p) ; Only if tree-sitter is generally available
+  :if (treesit-available-p)
   :demand t
   :config
-  (global-treesit-auto-mode)
-  (setq treesit-auto-install 'prompt) ; or t to always install, or 'prompt
-  (unless (treesit-language-available-p 'python)
-    (treesit-install-language-grammar 'python)))
+  (setq treesit-auto-install t)
+  (treesit-auto-add-to-auto-mode-alist))
 
 ;; The track-changes package is needed for eglot.
 (use-package track-changes
