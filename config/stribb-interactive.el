@@ -6,8 +6,6 @@
 ;;; - Server starting
 
 ;;; Code:
-(desktop-save-mode 1)
-
 (use-package server
   :straight nil
   :config
