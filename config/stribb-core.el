@@ -42,6 +42,14 @@
 (add-to-list 'exec-path "/usr/local/bin" t)
 (setenv "PATH" (string-join exec-path ":"))
 
+;; "Some of [the Straight variables] must be set *before* the
+;; bootstrap code runs..."
+(setq straight-use-package-by-default t)
+(setq straight-built-in-pseudo-packages
+      '(emacs nadvice python image-mode project flymake xref))
+(setq straight-recipe-repositories
+      '(org-elpa melpa gnu-elpa-mirror el-get emacsmirror-mirror))
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -58,11 +66,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(setq straight-use-package-by-default t)
-(setq straight-built-in-pseudo-packages
-      '(emacs nadvice python image-mode project flymake xref))
-(setq straight-recipe-repositories
-      '(org-elpa melpa gnu-elpa-mirror el-get emacsmirror-mirror))
 
 
 ;;; General packages
@@ -96,6 +99,7 @@
 (use-package exec-path-from-shell
   :when (or (daemonp)
             (memq window-system '(mac ns)))
+  :functions exec-path-from-shell-initialize
   :config
   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
                  "LC_CTYPE" "LC_ALL" "PYENV_ROOT" "PYENV_SHELL" "PIPENV_PIPFILE"))
@@ -105,6 +109,7 @@
   (exec-path-from-shell-initialize))
 
 (use-package delight
+  :functions delight
   :init
   (require 'use-package-delight)
   :config
@@ -117,13 +122,17 @@
   :after hydra)
 
 (use-package bash-completion
+  ;; bash-completion requires Bash 4; OSX uses the last GPLv2 version.
+  ;; Why can't we all get on?
+  :unless (eq system-type 'darwin)
   :after eshell)
 
 (use-package fish-completion
-  :after eshell bash-completion
+  :functions global-fish-completion-mode
+  :after eshell
   :ensure-system-package fish
   :config
-  (setq fish-completion-fallback-on-bash-p t)
+  (setq fish-completion-fallback-on-bash-p (not (eq system-type 'darwin)))
   (global-fish-completion-mode))
 
 (use-package which-key
@@ -144,6 +153,13 @@
   :bind ("C-;" . iedit-mode))
 
 (use-package multiple-cursors
+  :functions hydra-multiple-cursors/body mc/edit-lines mc/mark-all-like-this
+             mc/insert-numbers mc/insert-letters
+             mc/mark-next-like-this mc/unmark-next-like-this
+             mc/mark-previous-like-this mc/unmark-previous-like-this
+             mc/mark-all-in-region-regexp
+             mc/skip-to-next-like-this mc/skip-to-previous-like-this
+             mc/add-cursor-on-click
   :hydra (hydra-multiple-cursors
           nil
           "Multiple cursors"
@@ -175,10 +191,12 @@
                        :fork (:host github
                                     :repo "stribb/num3-mode"))
   :delight " #"
+  :functions num3-mode global-num3-mode
   :config
   (global-num3-mode t))
 
 (use-package yasnippet
+  :functions yas-global-mode
   :delight (yas-minor-mode " ✂")
   :config
   (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "yasnippet-go") t)
@@ -188,6 +206,7 @@
   :after yasnippet)
 
 (use-package company
+  :functions company-mode global-company-mode
   :bind (("<C-tab>" . company-complete))
   :init (setq completion-styles '(basic partial-completion emacs22 initials))
   :delight " Co"
@@ -203,7 +222,9 @@
 
 (use-package popup)
 
-(add-to-list 'native-comp-jit-compilation-deny-list "helm")
+;; Apply Helm native compilation workaround unless experimental feature is enabled
+(unless (stribb-feature-enabled-p 'helm-native-comp)
+  (add-to-list 'native-comp-jit-compilation-deny-list "helm"))
 ;; C-x c is the default key binding for helm-command-prefix-key.
 (use-package helm
   :delight
@@ -226,6 +247,7 @@
          ("C-z" . helm-select-action)))
 
 (use-package eshell
+  :functions eshell-cmpl-initialize
   :init
   (defun stribb/helm-eshell-completions nil
     (eshell-cmpl-initialize)
@@ -240,31 +262,23 @@
 
 (use-package direnv
   :if (executable-find "direnv")
-  :preface
-  (defun stribb/eshell-env-to-path ()
-    "Put $PATH into `eshell-env-path'"
-    (setq eshell-path-env (getenv "PATH")))
+  :functions direnv-mode direnv-update-environment
   :config
-  (direnv-mode)
-  (add-hook 'eshell-post-command-hook #'stribb/eshell-env-to-path))
+  (direnv-mode))
 
-(use-package org
+(use-package eshell
   :straight nil
-  :init (require 'stribb-org)
-  :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c l" . org-store-link)
-         ("C-c C-x TAB" . org-clock-in)))
+  :hook (eshell-post-command-hook . #'eshell-get-path))
 
-(use-package htmlize
-  :after org)
-
-(use-package org-pomodoro
-  :after org
-  :bind (("C-c C-x p" . org-pomodoro)
-         ("C-c C-x C-p" . org-pomodoro)))
+(require 'stribb-org)
 
 ;; https://github.com/alphapapa/unpackaged.el#hydra
 (use-package smerge-mode
+  :functions alphapapa/smerge-hydra/body
+             smerge-auto-leave smerge-next smerge-prev
+             smerge-keep-base smerge-keep-upper smerge-keep-lower smerge-keep-all smerge-keep-current
+             smerge-diff-base-upper smerge-diff-upper-lower smerge-diff-base-lower
+             smerge-refine smerge-ediff smerge-combine-with-next smerge-resolve smerge-kill-current
   :bind (:map smerge-mode-map
               ("C-c h" . alphapapa/smerge-hydra/body))
   :after hydra
@@ -309,6 +323,11 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package magit
   ;; Work around https://github.com/dgutov/diff-hl/issues/65 -- let's see if it works again?
   ;; :init (global-auto-revert-mode)
+  :functions magit-status magit-git-command-topdir magit-add-section-hook
+             magit-insert-unpushed-to-upstream magit-insert-unpushed-to-pushremote
+             magit-insert-recent-commits magit-insert-unpushed-to-upstream-or-recent
+             transient-insert-suffix transient-append-suffix magit-push-implicitly
+             magit-toplevel
   :bind (("C-x g" . magit-status)
 	 :map magit-mode-line-process-map
 	 ("C-<return>" . helm-find-files))
@@ -321,8 +340,8 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
   (setq magit-log-section-commit-count 20)
   (define-key with-editor-mode-map "\C-cP" 'git-commit-prev-message)
-  (if (executable-find "direnv")
-      (add-hook 'magit-mode-hook #'direnv-update-environment)) ; ?
+  (when (featurep 'direnv)
+    (add-hook 'magit-mode-hook #'direnv-update-environment)) ; ?
   (add-to-list 'magit-section-initial-visibility-alist '(recent . show))
   (add-to-list 'magit-section-initial-visibility-alist '(unstaged . show))
   (transient-insert-suffix 'magit-push "o"
@@ -355,6 +374,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-hook 'magit-mode (lambda () (num3-mode nil))))
 
 (use-package diff-hl
+  :functions global-diff-hl-mode diff-hl-flydiff-mode diff-hl-magit-post-refresh
   :after magit
   :config
   (global-diff-hl-mode)
@@ -364,6 +384,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 (use-package projectile
   :delight '(:eval (concat " " (projectile-project-name)))
+  :functions projectile-project-name projectile-next-project-buffer
+             projectile-previous-project-buffer projectile-switch-project
+             projectile-find-file projectile-mode
   :bind-keymap
   (("s-p" . projectile-command-map)
    ("C-c p" . projectile-command-map))
@@ -389,10 +412,12 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (projectile-mode 1))
 
 (use-package helm-projectile
-  :after (helm projectile)
+  :functions helm-projectile-on helm-projectile-rg helm-projectile-switch-project
   :bind
   (:map projectile-command-map
-        ("g" . helm-projectile-rg))
+        ("g" . helm-projectile-rg)
+        ("p" . helm-projectile-switch-project)
+        ("C-p" . helm-projectile-switch-project))
   :custom
   (helm-projectile-ignore-strategy 'search-tool)
   :config
@@ -420,51 +445,74 @@ If NOEXPAND? don't expand the file name."
           (call-interactively original-command)
         ;; Fallback to newline if original binding isn't found
         (newline))))
-(use-package gptel
-  :init
-  (require 'gptel-context)
-  :bind
-  ( ("C-c g s" . gptel-send)
-    ("C-c g r" . gptel-rewrite)
-    ("C-c g a" . gptel-add)
-    :map gptel-mode-map
-    ("C-c C-c" . gptel-send)
-    ("C-<return>" . gptel-send))
-  :init
-  (require 'gemini-models)
-  (require 'gptel-tools)
-  :config
-  (bind-key "S-<return>" #'stribb/gptel-newline-or-original gptel-mode-map)
-  (setq gptel-tools nil)
-  (setq gptel-backend
-        (gptel-make-gemini
-            "Gemini"
-          :key #'(lambda () (stribb/read-file "~/.gemini.key"))
-          :stream t))
-  (setq gptel-model 'gemini-2.5-flash-preview-05-20))
+
+(defun stribb/gptel-unwrap-gemini-markdown (beg end)
+  "Remove markdown backquotes that Gemini returns, from BEG to END."
+  (interactive "r")
+  (save-excursion
+    (goto-char end)
+    (beginning-of-line)
+    (when (looking-at "^```$")
+      (delete-region (match-beginning 0) (match-end 0)))
+    (goto-char beg)
+    (when (looking-at "^```.*$")
+      (delete-region (match-beginning 0) (match-end 0))
+      (delete-char 1))))
+
+;;(defvar gptel-post-rewrite-functions)
+;;(use-package gptel
+;;  :init
+;;  (require 'gptel-context)
+;;  (require 'gemini-models)
+;;  :bind
+;;  ( ("C-c g s" . gptel-send)
+;;    ("C-c g r" . gptel-rewrite)
+;;    ("C-c g a" . gptel-add)
+;;    :map gptel-mode-map
+;;    ("C-c C-c" . gptel-send)
+;;    ("C-<return>" . gptel-send))
+;;  :custom-face
+;;  ;(gpt-context-highlight-face (((background light) (:background "#f5e5d7"))))
+;;  ;(gpt-context-highlight-face (((background dark) (:background "#191970"))))
+;;  :functions gptel-make-gemini
+;;  :defines gptel-post-rewrite-functions
+;;  :config
+;;  (bind-key "S-<return>" #'stribb/gptel-newline-or-original gptel-mode-map)
+;;  (setq gptel-tools nil)
+;;  (setq gptel-expert-commands t)
+;;  (add-to-list 'gptel-post-rewrite-functions #'stribb/gptel-unwrap-gemini-markdown)
+;;  (setq gptel-backend
+;;        (gptel-make-gemini
+;;            "Gemini"
+;;          :key #'(lambda () (stribb/read-file "~/.gemini.key"))
+;;          :stream t))
+;;  (setq gptel-model 'gemini-2.5-flash))
 
 (use-package treesit-auto
   :if (treesit-available-p)
   :demand t
+  :functions treesit-auto-add-to-auto-mode-alist
   :config
   (setq treesit-auto-install t)
   (treesit-auto-add-to-auto-mode-alist))
 
 ;; The track-changes package is needed for eglot.
-(use-package track-changes
-    :straight (track-changes :type git :host github :repo "emacs-straight/track-changes"))  ;; WHY??!
+;(use-package track-changes
+;    :straight (track-changes :type git :host github :repo "emacs-straight/track-changes"))  ;; WHY??!
 
 (use-package eglot
   :demand t
-  :bind (("s-<return>" . eglot-code-action-quickfix)
-         ("M-r" . eglot-rename))
+  :functions eglot-alternatives eglot-format-buffer eglot-ensure
+             eglot-code-action-quickfix eglot-rename
+  :bind ( :map eglot-mode-map
+          ("s-<return>" . eglot-code-action-quickfix)
+          ("M-r" . eglot-rename))
   :hook
   ((python-mode-hook python-ts-mode-hook) . eglot-ensure)
   ((go-mode-hook go-ts-mode-hook) . eglot-ensure)
   :custom-face
   (eglot-code-action-suggestion-face ((t (:bold t :underline t))))
   (eglot-code-action-indicator-face ((t (:bold t :underline t))))
-
   :config
   (add-to-list 'eglot-stay-out-of 'flymake)
 
@@ -496,6 +544,10 @@ If NOEXPAND? don't expand the file name."
 
 ;; It's like a general purpose paredit-mode.
 (use-package smartparens
+  :functions sp-wrap-round sp-wrap-square sp-wrap-curly
+             sp-wrap-with-pair sp-use-smartparens-bindings
+             show-smartparens-global-mode turn-on-smartparens-mode
+             turn-on-smartparens-strict-mode
   :hook
   ((prog-mode-hook markdown-mode-hook yaml-mode-hook) . turn-on-smartparens-mode)
   ((ielm-mode-hook elisp-mode-hook) . turn-on-smartparens-strict-mode)
@@ -524,10 +576,12 @@ If NOEXPAND? don't expand the file name."
 
 (use-package ws-butler
   :delight
+  :functions ws-butler-global-mode
   :config (ws-butler-global-mode))
 
 (use-package flycheck
   :demand t
+  :functions global-flycheck-mode flycheck-mode flymake-mode
   :init
   (global-flycheck-mode 1)
 
@@ -560,6 +614,8 @@ If NOEXPAND? don't expand the file name."
   (use-package irony
     :hook (c++-mode-hook c-mode-hook objc-mode-hook)
     :after company
+    :functions irony-cdb-autosetup-compile-options irony-eldoc
+               irony-completion-at-point-async
     :config
     (irony-cdb-autosetup-compile-options)
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
@@ -570,11 +626,13 @@ If NOEXPAND? don't expand the file name."
 
   (use-package flycheck-irony
     :after irony
+    :functions flycheck-irony-setup
     :config
     (add-hook 'flycheck-mode-hook 'flycheck-irony-setup)
     (add-to-list 'company-backends 'company-irony))
 
   (use-package platformio-mode
+    :functions platformio-conditionally-enable
     :config
     (add-hook 'c++-mode-hook 'platformio-conditionally-enable)))
 
@@ -589,6 +647,7 @@ If NOEXPAND? don't expand the file name."
 
 (use-package ansible  ; a minor mode
   :after yaml-mode
+  :functions ansible-mode
   :init
   (defun stribb-yaml--enable-ansible-if-needed ()
     "Activate `ansible-mode` and `eglot` for Ansible project files."
@@ -605,6 +664,7 @@ If NOEXPAND? don't expand the file name."
 
 (use-package terraform-mode
   :mode "\\.tf\\'"
+  :functions terraform-format-on-save-mode
   :config (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
 
 ;; (when nil
@@ -625,7 +685,7 @@ If NOEXPAND? don't expand the file name."
     (when (local-variable-p 'fill-column)
       (setq fill-column 95))
     (when (local-variable-p 'go-ts-mode-indent-offset)
-      (setq go-ts-mode-indent-offset) 4))
+      (setq go-ts-mode-indent-offset 4)))
   :hook ((go-ts-mode-hook . stribb/go-mode)
          (go-mode-hook . stribb/go-mode)))
 
@@ -683,7 +743,7 @@ If NOEXPAND? don't expand the file name."
   (c-set-offset 'arglist-intro '+))
 (add-hook 'java-mode-hook 'stribb/java-indentation)
 
-(when (string= system-type "darwin")
+(when (eq system-type 'darwin)
   (setq dired-use-ls-dired nil)
   (require 'ls-lisp))
 
@@ -715,22 +775,22 @@ With ARG, go ARG forward or backward."
         ((looking-at "\\s)") (forward-char) (backward-sexp arg))
         ((looking-back "\\s(" 1) (backward-char) (forward-sexp arg))))
 
-(defun previous-error-or-scroll-down ()
-  "If Flycheck errors in buffer, go to previous one.  Otherwise scroll down."
-  (interactive)
-  (call-interactively (if flycheck-current-errors
-                         'previous-error
-                        'scroll-down-command)))
-
-(defun next-error-or-scroll-up ()
+(defun previous-error-or-scroll-up ()
   "If Flycheck errors in buffer, go to previous one.  Otherwise scroll up."
   (interactive)
   (call-interactively (if flycheck-current-errors
-                          'next-error
+                         'previous-error
                         'scroll-up-command)))
 
+(defun next-error-or-scroll-down ()
+  "If Flycheck errors in buffer, go to next one.  Otherwise scroll down."
+  (interactive)
+  (call-interactively (if flycheck-current-errors
+                          'next-error
+                        'scroll-down-command)))
+
 (defun stribb/open-init-file (n)
-  "Opens the init file."
+  "Opens the init file.  With argument N: if 4, open in other window; 5: frame."
   (interactive "p")
   (let ((buf (find-file-noselect user-init-file)))
     (cond
@@ -822,11 +882,11 @@ With ARG, go ARG forward or backward."
  ("C-s" . isearch-forward-regexp)
  ("s-f" . isearch-forward-regexp)
  ("<kp-add>" . next-error)
- ("<next>" . next-error-or-scroll-up)
- ("s-<down>" . next-error-or-scroll-up)
+ ("<next>" . next-error-or-scroll-down)
+ ("s-<down>" . next-error-or-scroll-down)
  ("<kp-subtract>" . previous-error)
- ("<prior>" . previous-error-or-scroll-down)
- ("s-<up>" . previous-error-or-scroll-down)
+ ("<prior>" . previous-error-or-scroll-up)
+ ("s-<up>" . previous-error-or-scroll-up)
  ("M-%" . query-replace-regexp)
  ("C-S-q" . quoted-insert)
  ("s-s" . save-buffer)
@@ -916,7 +976,6 @@ With ARG, go ARG forward or backward."
     "Unconditionally revert `help-mode' buffer."
     (interactive)
     (help-mode-revert-buffer nil t))
-
   :hook
   (help-mode-hook . (lambda ()
                       (setq revert-buffer-function #'stribb/help-mode-revert-buffer))))
@@ -925,17 +984,19 @@ With ARG, go ARG forward or backward."
 (midnight-delay-set 'midnight-delay "03:00")
 
 (use-package kubernetes
+  :functions kubernetes-overview
   :config
-  (fset 'k8s 'kubernetes-overview))
+  (defalias 'k8s #'kubernetes-overview))
 
 ;; Disable because we're not using GPG as an SSH agent everywhere.
 (when nil
   (unless (string-prefix-p "/tmp/ssh-" (getenv "SSH_AUTH_SOCK"))
     (setenv "SSH_AUTH_SOCK" (format "/run/user/%d/gnupg/S.gpg-agent.ssh" (user-uid)))))
 
-(setq-default
+(setq
  apropos-do-all t
  backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+ disabled-command-function nil
  ediff-window-setup-function 'ediff-setup-windows-default
  indent-tabs-mode nil
  load-prefer-newer t
@@ -952,11 +1013,6 @@ With ARG, go ARG forward or backward."
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
-
-(defadvice en/disable-command (around put-in-custom-file activate)
-  "Put novice.el declarations in `custom-file'."
-  (let ((user-init-file custom-file))
-    ad-do-it))
 
 ;; Bash and zsh fc:
 (add-to-list 'auto-mode-alist '("/bash-fc|/tmp/zsh" . sh-mode))
