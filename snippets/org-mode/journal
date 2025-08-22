@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: journal
+# key: journal
+# --
+#+TITLE: `(format-time-string "%Y-%m-%d")`
+#+OPTIONS: toc:nil num:nil author:nil date:nil
+#+STARTUP: align
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="styles.css" />
+#+LaTeX_CLASS: article
+#+LaTeX_CLASS_OPTIONS: [9pt,twocolumn,portrait]
+#+LATEX_HEADER: \\usepackage[margin=0.5in]{geometry}
+#+LATEX_HEADER: \\usepackage{enumitem}

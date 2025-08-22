@@ -1,0 +1,1 @@
+- This repo contains my personal Emacs Lisp configuration and uses no proprietary code.

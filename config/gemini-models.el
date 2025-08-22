@@ -56,8 +56,8 @@
 (require 'gptel)
 
 (setq gptel--gemini-models
-      '((gemini-2.5-pro-preview-05-06
-         :description "Most powerful Gemini thinking model..."
+      '((gemini-2.5-pro
+         :description "Most powerful Gemini thinking model. Highest intelligence and capabilities for complex tasks like coding and agentic workflows."
          :capabilities (tool-use json media audio video)
          :mime-types   ("image/png" "image/jpeg" "image/webp" "image/heic" "image/heif"
                         "application/pdf" "text/plain" "text/csv" "text/html"
@@ -68,8 +68,8 @@
          :output-cost 10.0
          :cutoff-date "2025-01")
 
-        (gemini-2.5-flash-preview-05-20
-         :description "Our best model in terms of price-performance..."
+        (gemini-2.5-flash
+         :description "Best price-performance Gemini model for production. Optimized for speed, efficiency, and scale."
          :capabilities (tool-use json media audio video)
          :mime-types   ("image/png" "image/jpeg" "image/webp" "image/heic" "image/heif"
                         "application/pdf" "text/plain" "text/csv" "text/html"
@@ -80,9 +80,9 @@
          :output-cost 0.60
          :cutoff-date "2025-01")
 
-        (gemini-2.0-flash-lite
-         :description "Fastest and most cost-efficient Flash model..."
-         :capabilities (json media audio video)
+        (gemini-2.5-flash-lite-preview-06-17
+         :description "Gemini 2.5 Flash-Lite: Preview. Most cost-efficient and fastest 2.5 model, optimized for high-volume, latency-sensitive tasks."
+         :capabilities (tool-use json media audio video)
          :mime-types   ("image/png" "image/jpeg" "image/webp"
                         "application/pdf" "text/plain"
                         "audio/x-aac" "audio/flac" "audio/mp3" "audio/m4a" "audio/mpeg" "audio/mpga" "audio/mp4" "audio/opus" "audio/pcm" "audio/wav" "audio/webm"
@@ -90,10 +90,10 @@
          :context-window 1024
          :input-cost 0.075
          :output-cost 0.30
-         :cutoff-date "2024-06")
+         :cutoff-date "2025-01")
 
         (gemma-3-27b-it
-         :description "Gemma 3: Largest instruction-tuned open model..."
+         :description "Gemma 3: Largest instruction-tuned open model."
          :capabilities (media json audio)
          :mime-types   ("image/png" "image/jpeg" "image/webp"
                         "text/plain" "application/pdf"
@@ -102,8 +102,6 @@
          :input-cost 0.0
          :output-cost 0.0
          :cutoff-date "2024-08")))
-
-(length gptel--gemini-models)
 
 (provide 'gemini-models)
 

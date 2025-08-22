@@ -82,16 +82,6 @@
             (set-frame-font "JetBrainsMono Nerd Font-13" nil t)
             (set-fontset-font t 'unicode "JetBrainsMono Nerd Font" nil 'prepend)))
 
-;;; Old fogey mode.
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Disabling fogeyphobic UI elements...")
-            (when (fboundp 'tool-bar-mode)
-              (tool-bar-mode -1))
-            (when (fboundp 'scroll-bar-mode)
-              (scroll-bar-mode -1))
-            (when (fboundp 'horizontal-scroll-bar-mode)
-              (horizontal-scroll-bar-mode -1))))
 
 ;; Line numbers in the gutter
 (setq-default display-line-numbers nil)
