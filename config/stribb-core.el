@@ -459,35 +459,6 @@ If NOEXPAND? don't expand the file name."
       (delete-region (match-beginning 0) (match-end 0))
       (delete-char 1))))
 
-;;(defvar gptel-post-rewrite-functions)
-;;(use-package gptel
-;;  :init
-;;  (require 'gptel-context)
-;;  (require 'gemini-models)
-;;  :bind
-;;  ( ("C-c g s" . gptel-send)
-;;    ("C-c g r" . gptel-rewrite)
-;;    ("C-c g a" . gptel-add)
-;;    :map gptel-mode-map
-;;    ("C-c C-c" . gptel-send)
-;;    ("C-<return>" . gptel-send))
-;;  :custom-face
-;;  ;(gpt-context-highlight-face (((background light) (:background "#f5e5d7"))))
-;;  ;(gpt-context-highlight-face (((background dark) (:background "#191970"))))
-;;  :functions gptel-make-gemini
-;;  :defines gptel-post-rewrite-functions
-;;  :config
-;;  (bind-key "S-<return>" #'stribb/gptel-newline-or-original gptel-mode-map)
-;;  (setq gptel-tools nil)
-;;  (setq gptel-expert-commands t)
-;;  (add-to-list 'gptel-post-rewrite-functions #'stribb/gptel-unwrap-gemini-markdown)
-;;  (setq gptel-backend
-;;        (gptel-make-gemini
-;;            "Gemini"
-;;          :key #'(lambda () (stribb/read-file "~/.gemini.key"))
-;;          :stream t))
-;;  (setq gptel-model 'gemini-2.5-flash))
-
 (use-package treesit-auto
   :if (treesit-available-p)
   :demand t

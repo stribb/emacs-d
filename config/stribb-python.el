@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-;;; stribb-ui.el ends here
+;;; stribb-python.el ends here
 
 (use-package python
   :preface
