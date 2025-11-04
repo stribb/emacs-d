@@ -22,6 +22,22 @@
   (setq inhibit-startup-screen t)
   (add-hook 'after-init-hook #'stribb/restore-vars :append))
 
+(defvar stribb/restart-desktop-file ".emacs-restart-desktop"
+  "Desktop file that also serves as restart flag in `user-emacs-directory'.")
+
+(defun stribb/maybe-restore-desktop ()
+  "Check if this was a restart and restore desktop if so."
+  (let ((desktop-file (expand-file-name stribb/restart-desktop-file user-emacs-directory)))
+    (when (file-exists-p desktop-file)
+      ;; Clean up the restart desktop file after it's loaded
+      (add-hook 'desktop-after-read-hook
+                (lambda ()
+                  (let ((restart-file (expand-file-name stribb/restart-desktop-file user-emacs-directory)))
+                    (when (file-exists-p restart-file)
+                      (delete-file restart-file)))))
+      (dlet ((desktop-base-file-name stribb/restart-desktop-file))
+        (desktop-read user-emacs-directory)))))
+
 (defun stribb/restore-vars ()
   "Restore variables and perform post-init tasks."
   (setq
@@ -29,7 +45,18 @@
    file-name-handler-alist file-name-handler-alist-old
    gc-cons-threshold 800000    ; Reset to a more reasonable value
    gc-cons-percentage 0.1)
-  (run-with-idle-timer 10 nil #'garbage-collect))
+  (run-with-idle-timer 10 nil #'garbage-collect)
+  ;; Restore desktop after a short delay to let themes/faces settle
+  (run-with-timer 0.1 nil #'stribb/maybe-restore-desktop))
+
+(defun stribb/restart-emacs ()
+  "Save desktop and restart Emacs, restoring all open buffers."
+  (interactive)
+  (dlet ((desktop-base-file-name stribb/restart-desktop-file))
+    (desktop-save user-emacs-directory t))
+  (restart-emacs))
+
+(defalias 'rrr 'stribb/restart-emacs)
 
 (stribb/optimize-startup)
 
@@ -485,19 +512,27 @@ If NOEXPAND? don't expand the file name."
   (eglot-code-action-suggestion-face ((t (:bold t :underline t))))
   (eglot-code-action-indicator-face ((t (:bold t :underline t))))
   :config
-  (add-to-list 'eglot-stay-out-of 'flymake)
+  ;; Use flymake for LSP diagnostics, disable flycheck in LSP-managed buffers
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (when flycheck-mode
+                (flycheck-mode -1))
+              (flymake-mode 1)))
 
   (setq eglot-workspace-configuration
-        '((:gopls . ((gofumpt . t)))))
+        '((:gopls . ((gofumpt . t)))
+          ;; Basedpyright configuration
+          (:basedpyright . (:analysis (:typeCheckingMode "standard"
+                                       :autoSearchPaths t
+                                       :useLibraryCodeForTypes t
+                                       :diagnosticMode "openFilesOnly")))))
+
+  ;; Use basedpyright for Python (fallback to pyright, then pylsp)
   (add-to-list 'eglot-server-programs
                `((python-ts-mode python-mode) .
-                 ,(eglot-alternatives '("pylsp"
-                                        "ruff-lsp"))))
-  (defun stribb/setup-format-on-save-for-eglot-buffer ()
-    "Add `eglot-format-buffer' to `before-save-hook' for the current buffer."
-    (add-hook 'before-save-hook #'eglot-format-buffer nil 'local))
-
-  (add-hook 'eglot-managed-mode-hook #'stribb/setup-format-on-save-for-eglot-buffer)
+                 ,(eglot-alternatives '(("basedpyright-langserver" "--stdio")
+                                       ("pyright-langserver" "--stdio")
+                                       ("pylsp")))))
   (when (eq window-system 'ns)
     (define-key key-translation-map (kbd "s-<mouse-1>") (kbd "<mouse-2>"))))
 
