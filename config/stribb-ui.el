@@ -19,8 +19,29 @@
 
 (use-package doom-modeline
   :demand t
+  :functions (doom-modeline-def-segment doom-modeline-def-modeline doom-modeline-spc)
   :commands (doom-modeline-mode)
-  :config (doom-modeline-mode 1))
+  :config
+  (doom-modeline-mode 1)
+
+  ;; Hide buffer encoding (UTF-8, LF, etc.) - only show when unusual
+  (setq doom-modeline-buffer-encoding nil)
+
+  ;; Add auto-revert indicator to mode-line-misc-info
+  (setq-default mode-line-misc-info
+                (append mode-line-misc-info
+                        '((:eval
+                           (when (and (boundp 'auto-revert-mode) auto-revert-mode)
+                             (propertize " ↻"
+                                         'face '(:inherit success :weight bold)
+                                         'help-echo "Auto-revert is ON\nmouse-1: Toggle auto-revert"
+                                         'mouse-face 'mode-line-highlight
+                                         'local-map (let ((map (make-sparse-keymap)))
+                                                      (define-key map [mode-line mouse-1]
+                                                        (lambda ()
+                                                          (interactive)
+                                                          (auto-revert-mode 'toggle)))
+                                                      map))))))))
 
 ;; Thanks to https://amitp.blogspot.com/2014/04/emacs-rainbow-identifiers.html
 (use-package rainbow-identifiers
@@ -70,7 +91,8 @@
 
 (use-package whitespace
   :config
-  (setq whitespace-style '(face lines-tail))
+  (setq whitespace-style '(face lines-tail)
+        whitespace-line-column nil)
   :hook (prog-mode-hook . whitespace-mode))
 
 (use-package highlight-indentation

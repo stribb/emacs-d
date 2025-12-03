@@ -782,18 +782,26 @@ With ARG, go ARG forward or backward."
         ((looking-back "\\s(" 1) (backward-char) (forward-sexp arg))))
 
 (defun previous-error-or-scroll-up ()
-  "If Flycheck errors in buffer, go to previous one.  Otherwise scroll up."
+  "If Flycheck/Flymake errors in buffer, go to previous one.  Otherwise scroll up."
   (interactive)
-  (call-interactively (if flycheck-current-errors
-                         'previous-error
-                        'scroll-up-command)))
+  (cond
+   ((and (bound-and-true-p flymake-mode) (flymake-diagnostics))
+    (flymake-goto-prev-error))
+   (flycheck-current-errors
+    (flycheck-previous-error))
+   (t
+    (scroll-up-command))))
 
 (defun next-error-or-scroll-down ()
-  "If Flycheck errors in buffer, go to next one.  Otherwise scroll down."
+  "If Flycheck/Flymake errors in buffer, go to next one.  Otherwise scroll down."
   (interactive)
-  (call-interactively (if flycheck-current-errors
-                          'next-error
-                        'scroll-down-command)))
+  (cond
+   ((and (bound-and-true-p flymake-mode) (flymake-diagnostics))
+    (flymake-goto-next-error))
+   (flycheck-current-errors
+    (flycheck-next-error))
+   (t
+    (scroll-down-command))))
 
 (defun stribb/open-init-file (n)
   "Opens the init file.  With argument N: if 4, open in other window; 5: frame."
