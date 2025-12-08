@@ -249,43 +249,7 @@
 
 (use-package popup)
 
-;; Apply Helm native compilation workaround unless experimental feature is enabled
-(unless (stribb-feature-enabled-p 'helm-native-comp)
-  (add-to-list 'native-comp-jit-compilation-deny-list "helm"))
-;; C-x c is the default key binding for helm-command-prefix-key.
-(use-package helm
-  :delight
-  :after (async popup)
-  :bind (("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files)
-         ("<C-return>" . helm-find-files)
-         ("s-t" . helm-find-files)
-         ("C-x C-v" . find-alternate-file)
-         ("C-x C-d" . helm-browse-project)
-         ("C-x b" . helm-buffers-list)
-         ("C-c i" . helm-imenu)
-         ("M-s o" . helm-occur)
-         ("C-x r b" . helm-filtered-bookmarks)
-         ("C-x C-r" . helm-recentf)
-         ("C-h a" . helm-apropos)
-         :map helm-map
-         ("<tab>" . helm-execute-persistent-action)
-         ("C-i" . helm-execute-persistent-action)
-         ("C-z" . helm-select-action)))
-
-(use-package eshell
-  :functions eshell-cmpl-initialize
-  :init
-  (defun stribb/helm-eshell-completions nil
-    (eshell-cmpl-initialize)
-    (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
-    (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))
-  :config
-  (add-hook 'eshell-mode-hook #'stribb/helm-eshell-completions))
-
-(use-package helm-rg  ;; ripgrep
-  :if (executable-find "rg")
-  :after helm)
+(require 'stribb-completion)
 
 (use-package direnv
   :if (executable-find "direnv")
@@ -422,7 +386,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
    ("C-~" . projectile-previous-project-buffer))
   (:map projectile-command-map
               ("C-p" . projectile-switch-project)
-              ("g" . helm-projectile-rg)
+              ("g" . consult-ripgrep)
               ("p" . projectile-switch-project))
   :demand t
   :init
@@ -438,19 +402,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :config
   (projectile-mode 1))
 
-(use-package helm-projectile
-  :functions helm-projectile-on helm-projectile-rg helm-projectile-switch-project
-  :bind
-  (:map projectile-command-map
-        ("g" . helm-projectile-rg)
-        ("p" . helm-projectile-switch-project)
-        ("C-p" . helm-projectile-switch-project))
-  :custom
-  (helm-projectile-ignore-strategy 'search-tool)
-  :config
-  (helm-projectile-on)
-  (set-face-attribute 'helm-grep-file nil :foreground "#657b83" :underline t)
-  (set-face-attribute 'helm-rg-file-match-face nil :foreground "#657b83" :weight 'light))
 
 
 
