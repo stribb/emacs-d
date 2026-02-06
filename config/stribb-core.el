@@ -385,9 +385,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (("C-`" . projectile-next-project-buffer)
    ("C-~" . projectile-previous-project-buffer))
   (:map projectile-command-map
-              ("C-p" . projectile-switch-project)
-              ("g" . consult-ripgrep)
-              ("p" . projectile-switch-project))
+        ("C-p" . projectile-switch-project)
+        ("g" . consult-ripgrep)
+        ("p" . projectile-switch-project))
   :demand t
   :init
   (defun stribb/magit-status-or-dired ()
@@ -396,11 +396,30 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
         (magit-status)
       (projectile-find-file)))
 
+  (defvar stribb/projectile-native-cache (make-hash-table :test 'equal)
+    "Separate cache for native mode indexing (all files including gitignored).")
+
+  (defun stribb/projectile-find-file-with-all (orig-fun &rest args)
+    "Advice to show all files (including gitignored) when called with prefix arg.
+With C-u, temporarily use native indexing to show gitignored files.
+Maintains separate caches for alien and native modes."
+    (if current-prefix-arg
+        (let ((projectile-indexing-method 'native)
+              ;; Swap to native cache
+              (projectile-projects-cache stribb/projectile-native-cache))
+          (prog1 (apply orig-fun args)
+            ;; Save native cache back
+            (setq stribb/projectile-native-cache projectile-projects-cache)))
+      (apply orig-fun args)))
+
   (setq projectile-project-search-path
         (seq-filter #'file-directory-p '("~/experimental" "~/go/src"))
-        projectile-switch-project-action 'stribb/magit-status-or-dired)
+        projectile-switch-project-action 'stribb/magit-status-or-dired
+        ;; Disable git submodule scanning - submodule--helper binary bypasses ~/bin/git wrapper
+        projectile-git-submodule-command "")
   :config
-  (projectile-mode 1))
+  (projectile-mode 1)
+  (advice-add 'projectile-find-file :around #'stribb/projectile-find-file-with-all))
 
 
 
