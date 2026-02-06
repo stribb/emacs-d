@@ -24,7 +24,7 @@
   :mode ("\\.py\\'" . python-ts-mode)
   :hook ((python-ts-mode-hook python-mode-hook) .
 	 (lambda ()
-	   (add-hook 'before-save-hook #'stribb/format-with-ruff nil 'local))))
+	   (add-hook 'after-save-hook #'stribb/format-with-ruff nil 'local))))
 
 (provide 'stribb-python)
 ;;; stribb-python.el ends here
