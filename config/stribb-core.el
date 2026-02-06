@@ -906,14 +906,30 @@ With ARG, go ARG forward or backward."
   :init
   (defun stribb/eshell-prompt-function ()
     "Custom prompt function."
-    (let ((ok? eshell-last-command-status))
-      (concat (with-face ": " :background (if ok? "gray" "red"))
-              (abbreviate-file-name (eshell/pwd))
-              (if (= (user-uid) 0) " # " " ; "))))
+    (let ((success? (eq eshell-last-command-status 0)))
+      (concat
+       (propertize ": " 'face `(:background ,(if success? "gray" "red")))
+       (abbreviate-file-name (eshell/pwd))
+       (if (= (user-uid) 0) " # " " ; "))))
   :config
   (setq eshell-prompt-regexp "^: [^#$;\n]* [#$;] "
-	eshell-prompt-function #'stribb/eshell-prompt-function
-	eshell-hist-ignoredups t))
+        eshell-prompt-function #'stribb/eshell-prompt-function
+        eshell-hist-ignoredups t))
+
+(use-package eshell
+  :straight nil
+  :init
+  (defun stribb/eshell-prompt-function ()
+    "A working prompt function that doesn't crash."
+    ;; Use `default-directory` instead of `eshell/pwd`
+    (concat
+     (propertize (abbreviate-file-name default-directory) 'face '(:foreground "green"))
+     (if (= (user-uid) 0) " # " " ; ")))
+  :config
+  ;; Simplified regex to match the simplified prompt
+  (setq eshell-prompt-regexp "^[^#;\n]* [#;] "
+        eshell-prompt-function #'stribb/eshell-prompt-function
+        eshell-hist-ignoredups t))
 
 (use-package simple
   :straight nil
