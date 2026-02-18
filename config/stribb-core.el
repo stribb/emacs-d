@@ -325,10 +325,19 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
   :demand t
   :config
+  (defvar-local stribb/gerrit-target-branch nil
+    "Branch to push to on Gerrit. Auto-detected from git remote. Override per-project via .dir-locals.el.")
+  (put 'stribb/gerrit-target-branch 'safe-local-variable #'stringp)
+  (defun stribb/get-gerrit-target-branch ()
+    "Get target branch, auto-detecting from git if not set."
+    (or stribb/gerrit-target-branch
+        (string-remove-prefix
+         "origin/"
+         (string-trim (shell-command-to-string "git-default-branch")))))
   (defun magit-push-to-gerrit ()
     (interactive)
-    (magit-git-command-topdir "git push origin HEAD:refs/for/master"))
-
+    (magit-git-command-topdir
+     (format "git push origin HEAD:refs/for/%s" (stribb/get-gerrit-target-branch))))
   (setq magit-log-section-commit-count 20)
   (define-key with-editor-mode-map "\C-cP" 'git-commit-prev-message)
   (when (featurep 'direnv)
