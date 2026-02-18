@@ -141,11 +141,11 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
         ("p" . projectile-switch-project))
   :demand t
   :init
-  (defun stribb/magit-status-or-dired ()
+  (defun stribb/vc-status-or-dired ()
     (interactive)
     (cond
      ((ignore-errors (magit-toplevel)) (magit-status))
-     ((eq (projectile-project-vcs) 'jj) (dired (projectile-project-root)))
+     ((eq (projectile-project-vcs) 'jj) (majutsu-log))
      (t (projectile-find-file))))
 
   (defvar stribb/projectile-native-cache (make-hash-table :test 'equal)
@@ -166,12 +166,15 @@ Maintains separate caches for alien and native modes."
 
   (setq projectile-project-search-path
         (seq-filter #'file-directory-p '("~/experimental" "~/go/src"))
-        projectile-switch-project-action 'stribb/magit-status-or-dired
-        ;; Disable git submodule scanning - submodule--helper binary bypasses ~/bin/git wrapper
-        projectile-git-submodule-command "")
+        projectile-switch-project-action 'stribb/vc-status-or-dired)
   :config
   (projectile-mode 1)
   (advice-add 'projectile-find-file :around #'stribb/projectile-find-file-with-all))
+
+(use-package majutsu
+  :straight (:host github :repo "0WD0/majutsu")
+  :functions majutsu-log
+  :bind ("C-x j" . majutsu-log))
 
 (provide 'stribb-vcs)
 ;;; stribb-vcs.el ends here
