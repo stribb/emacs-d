@@ -401,9 +401,10 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :init
   (defun stribb/magit-status-or-dired ()
     (interactive)
-    (if (magit-toplevel)
-        (magit-status)
-      (projectile-find-file)))
+    (cond
+     ((ignore-errors (magit-toplevel)) (magit-status))
+     ((eq (projectile-project-vcs) 'jj) (dired (projectile-project-root)))
+     (t (projectile-find-file))))
 
   (defvar stribb/projectile-native-cache (make-hash-table :test 'equal)
     "Separate cache for native mode indexing (all files including gitignored).")
