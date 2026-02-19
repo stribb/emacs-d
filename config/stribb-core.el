@@ -129,7 +129,8 @@
   :functions exec-path-from-shell-initialize
   :config
   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
-                 "LC_CTYPE" "LC_ALL" "PYENV_ROOT" "PYENV_SHELL" "PIPENV_PIPFILE"))
+                 "LC_CTYPE" "LC_ALL" "PYENV_ROOT" "PYENV_SHELL" "PIPENV_PIPFILE"
+                 "GIT_EXEC_PATH"))
     (add-to-list 'exec-path-from-shell-variables var))
   ;; (when (eq system-type 'darwin)
   ;;   (setq exec-path-from-shell-check-startup-files nil))
