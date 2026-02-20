@@ -27,21 +27,21 @@
   ;; Hide buffer encoding (UTF-8, LF, etc.) - only show when unusual
   (setq doom-modeline-buffer-encoding nil)
 
-  ;; Add auto-revert indicator to mode-line-misc-info
-  (setq-default mode-line-misc-info
-                (append mode-line-misc-info
-                        '((:eval
-                           (when (and (boundp 'auto-revert-mode) auto-revert-mode)
-                             (propertize " ↻"
-                                         'face '(:inherit success :weight bold)
-                                         'help-echo "Auto-revert is ON\nmouse-1: Toggle auto-revert"
-                                         'mouse-face 'mode-line-highlight
-                                         'local-map (let ((map (make-sparse-keymap)))
-                                                      (define-key map [mode-line mouse-1]
-                                                        (lambda ()
-                                                          (interactive)
-                                                          (auto-revert-mode 'toggle)))
-                                                      map))))))))
+  (doom-modeline-def-segment auto-revert
+    "Indicator when the buffer is being auto-reverted."
+    (when (or auto-revert-mode auto-revert-notify-watch-descriptor)
+      (propertize " ↻"
+                  'face (doom-modeline-face 'doom-modeline-info)
+                  'help-echo "Auto-revert active\nmouse-1: toggle"
+                  'mouse-face 'mode-line-highlight
+                  'local-map (let ((map (make-sparse-keymap)))
+                               (define-key map [mode-line mouse-1]
+                                 (lambda () (interactive) (auto-revert-mode 'toggle)))
+                               map))))
+
+  (doom-modeline-def-modeline 'main
+    '(eldoc bar window-state workspace-name window-number modals matches follow buffer-info remote-host buffer-position word-count parrot selection-info)
+    '(compilation objed-state misc-info project-name persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs auto-revert check time)))
 
 ;; Thanks to https://amitp.blogspot.com/2014/04/emacs-rainbow-identifiers.html
 (use-package rainbow-identifiers
