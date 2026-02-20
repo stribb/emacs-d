@@ -123,6 +123,9 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 (use-package projectile
+  :straight (projectile
+             :host github :repo "bbatsov/projectile"
+             :fork (:repo "stribb/projectile"))
   :delight '(:eval (concat " " (projectile-project-name)))
   :functions projectile-project-name projectile-next-project-buffer
              projectile-previous-project-buffer projectile-switch-project
@@ -167,18 +170,15 @@ Maintains separate caches for alien and native modes."
         projectile-switch-project-action 'stribb/vc-status-or-dired)
   :config
   (projectile-mode 1)
-  (advice-add 'projectile-find-file :around #'stribb/projectile-find-file-with-all))
+  (advice-add 'projectile-find-file :around #'stribb/projectile-find-file-with-all)
+  (setq projectile-vcs-markers
+        (cons '(".jj" . jj)
+              (assoc-delete-all ".jj" projectile-vcs-markers))))
 
 (use-package majutsu
   :straight (:host github :repo "0WD0/majutsu")
   :functions majutsu-log majutsu-find-file-at-point majutsu-visit-thing
   :preface
-  (defun stribb/projectile-prefer-jj (orig-fun &optional project-root)
-    "Detect jj before git, so colocated repos are treated as jj."
-    (or project-root (setq project-root (projectile-acquire-root)))
-    (if (projectile-file-exists-p (expand-file-name ".jj" project-root))
-        'jj
-      (funcall orig-fun project-root)))
   (defun stribb/majutsu-visit-dwim ()
     "Visit thing at point in a majutsu buffer.
 On a `jj-file' section, open the workspace file directly.
@@ -191,8 +191,6 @@ Otherwise fall through to `majutsu-visit-thing'."
                             default-directory)))
       ('jj-commit (majutsu-find-file-at-point))
       (_ (majutsu-visit-thing))))
-  :config
-  (advice-add 'projectile-project-vcs :around #'stribb/projectile-prefer-jj)
   :bind (("C-x j" . majutsu-log)
          :map majutsu-log-mode-map
          ("RET" . stribb/majutsu-visit-dwim)))
