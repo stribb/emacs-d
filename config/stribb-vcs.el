@@ -171,8 +171,31 @@ Maintains separate caches for alien and native modes."
 
 (use-package majutsu
   :straight (:host github :repo "0WD0/majutsu")
-  :functions majutsu-log
-  :bind ("C-x j" . majutsu-log))
+  :functions majutsu-log majutsu-find-file-at-point majutsu-visit-thing
+  :preface
+  (defun stribb/projectile-prefer-jj (orig-fun &optional project-root)
+    "Detect jj before git, so colocated repos are treated as jj."
+    (or project-root (setq project-root (projectile-acquire-root)))
+    (if (projectile-file-exists-p (expand-file-name ".jj" project-root))
+        'jj
+      (funcall orig-fun project-root)))
+  (defun stribb/majutsu-visit-dwim ()
+    "Visit thing at point in a majutsu buffer.
+On a `jj-file' section, open the workspace file directly.
+On a `jj-commit' section, prompt for a file in that commit.
+Otherwise fall through to `majutsu-visit-thing'."
+    (interactive)
+    (pcase (oref (magit-current-section) type)
+      ('jj-file (find-file (expand-file-name
+                            (oref (magit-current-section) value)
+                            default-directory)))
+      ('jj-commit (majutsu-find-file-at-point))
+      (_ (majutsu-visit-thing))))
+  :config
+  (advice-add 'projectile-project-vcs :around #'stribb/projectile-prefer-jj)
+  :bind (("C-x j" . majutsu-log)
+         :map majutsu-log-mode-map
+         ("RET" . stribb/majutsu-visit-dwim)))
 
 (provide 'stribb-vcs)
 ;;; stribb-vcs.el ends here
