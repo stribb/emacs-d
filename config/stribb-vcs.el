@@ -55,8 +55,6 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                                           (alphapapa/smerge-hydra/body)))))
 
 (use-package magit
-  ;; Work around https://github.com/dgutov/diff-hl/issues/65 -- let's see if it works again?
-  ;; :init (global-auto-revert-mode)
   :functions magit-status magit-git-command-topdir magit-add-section-hook
              magit-insert-unpushed-to-upstream magit-insert-unpushed-to-pushremote
              magit-insert-recent-commits magit-insert-unpushed-to-upstream-or-recent
