@@ -430,7 +430,8 @@ If NOEXPAND? don't expand the file name."
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command (or (executable-find "multimarkdown") "multimarkdown")))
+  :init (setq markdown-command (or (executable-find "multimarkdown") "multimarkdown")
+              markdown-fontify-code-blocks-natively t))
 
 (use-package grip-mode
   :after markdown-mode
