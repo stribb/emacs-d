@@ -43,18 +43,16 @@
     '(eldoc bar window-state workspace-name window-number modals matches follow buffer-info remote-host buffer-position word-count parrot selection-info)
     '(compilation objed-state misc-info project-name persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs auto-revert check time)))
 
-;; Thanks to https://amitp.blogspot.com/2014/04/emacs-rainbow-identifiers.html
-(use-package rainbow-identifiers
-  :hook (prog-mode-hook . rainbow-identifiers-mode)
+(use-package color-identifiers-mode
+  :hook (prog-mode-hook . color-identifiers-mode)
   :config
-  (add-to-list 'rainbow-identifiers-faces-to-override
-               'font-lock-function-name-face)
-  (set-face-attribute 'font-lock-variable-name-face nil :foreground 'unspecified)
-  (setq-default rainbow-identifiers-choose-face-function
-                'rainbow-identifiers-cie-l*a*b*-choose-face
-                rainbow-identifiers-cie-l*a*b*-lightness 45
-                rainbow-identifiers-cie-l*a*b*-saturation 40
-                rainbow-identifiers-cie-l*a*b*-color-count 15))
+  (setq color-identifiers:num-colors 15
+        color-identifiers:min-color-saturation 0.3
+        color-identifiers:max-color-saturation 0.5)
+  (add-to-list 'color-identifiers:modes-alist
+               '(gleam-ts-mode . ("" "\\_<\\([a-zA-Z_]\\(?:\\s_\\|\\sw\\)*\\)"
+                                  (nil font-lock-variable-name-face
+                                       font-lock-function-name-face)))))
 
 (use-package rainbow-delimiters
   :hook (prog-mode-hook . rainbow-delimiters-mode))

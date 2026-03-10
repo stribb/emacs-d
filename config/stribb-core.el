@@ -431,7 +431,9 @@ If NOEXPAND? don't expand the file name."
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command (or (executable-find "multimarkdown") "multimarkdown")
-              markdown-fontify-code-blocks-natively t))
+              markdown-fontify-code-blocks-natively t)
+  :config
+  (add-to-list 'markdown-code-lang-modes '("gleam" . gleam-ts-mode)))
 
 (use-package grip-mode
   :after markdown-mode
@@ -547,12 +549,14 @@ If NOEXPAND? don't expand the file name."
   (use-package alchemist
     :after elixir-mode))
 
-(progn
-  (use-package gleam-ts-mode
-    :straight (gleam-ts-mode
-               :type git
-               :host github
-               :repo "gleam-lang/gleam-mode")))
+(use-package gleam-ts-mode
+  :straight (gleam-ts-mode
+             :type git
+             :host github
+             :repo "gleam-lang/gleam-mode")
+  :mode "\\.gleam\\'"
+  :init (add-to-list 'treesit-language-source-alist
+                     '(gleam "https://github.com/gleam-lang/tree-sitter-gleam")))
 
 (require 'stribb-python)
 
