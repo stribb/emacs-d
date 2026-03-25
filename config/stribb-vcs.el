@@ -173,7 +173,16 @@ Maintains separate caches for alien and native modes."
   (advice-add 'projectile-find-file :around #'stribb/projectile-find-file-with-all)
   (setq projectile-vcs-markers
         (cons '(".jj" . jj)
-              (assoc-delete-all ".jj" projectile-vcs-markers))))
+              (assoc-delete-all ".jj" projectile-vcs-markers)))
+  ;; Detect ops/ subdirs as projects (e.g. cvaas repo) so eglot/pyright
+  ;; finds pyproject.toml instead of using the git root.
+  (add-to-list 'projectile-project-root-files-bottom-up "cvaas_lib")
+  (setq projectile-project-name-function
+        (lambda (root)
+          (let ((name (file-name-nondirectory (directory-file-name root))))
+            (if (string-equal name "ops")
+                (string-join (last (split-string (directory-file-name root) "/") 2) "/")
+              name)))))
 
 (use-package majutsu
   :straight (:host github :repo "0WD0/majutsu")
