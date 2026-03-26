@@ -355,7 +355,7 @@ If NOEXPAND? don't expand the file name."
 (use-package subword
   :straight nil
   :hook
-  ((prog-mode-hook markdown-mode-hook yaml-mode-hook) . (lambda () (subword-mode t))))
+  (prog-mode-hook . (lambda () (subword-mode t))))
 
 (use-package jq-mode
   :mode "\\.jq\\'"
@@ -371,7 +371,7 @@ If NOEXPAND? don't expand the file name."
              show-smartparens-global-mode turn-on-smartparens-mode
              turn-on-smartparens-strict-mode
   :hook
-  ((prog-mode-hook markdown-mode-hook yaml-mode-hook) . turn-on-smartparens-mode)
+  (prog-mode-hook . turn-on-smartparens-mode)
   ((ielm-mode-hook elisp-mode-hook) . turn-on-smartparens-strict-mode)
   :bind (:map smartparens-mode-map
               ("M-(" . sp-wrap-round)
@@ -430,6 +430,7 @@ If NOEXPAND? don't expand the file name."
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
+  :hook (markdown-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
   :init (setq markdown-command (or (executable-find "multimarkdown") "multimarkdown")
               markdown-fontify-code-blocks-natively t)
   :config
@@ -469,25 +470,27 @@ If NOEXPAND? don't expand the file name."
 (use-package json-mode
   :mode ("\\.jso?n\\'" . json-mode))
 
-(use-package yaml-mode
-  :mode (("\\.ya?ml\\'" . yaml-mode)
-         ("\\.crd\\'" . yaml-mode))
-  :magic ("^# vi: set ft=yaml" . yaml-mode)
-  :bind (:map yaml-mode-map ("C-m" . newline-and-indent)))
+(use-package yaml-ts-mode
+  :straight nil
+  :mode (("\\.ya?ml\\'" . yaml-ts-mode)
+         ("\\.crd\\'" . yaml-ts-mode))
+  :magic ("^# vi: set ft=yaml" . yaml-ts-mode)
+  :hook (yaml-ts-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
+  :bind (:map yaml-ts-mode-map ("C-m" . newline-and-indent)))
 
 (use-package ansible  ; a minor mode
-  :after yaml-mode
+  :after yaml-ts-mode
   :functions ansible-mode
   :init
   (defun stribb-yaml--enable-ansible-if-needed ()
     "Activate `ansible-mode` and `eglot` for Ansible project files."
-    ;; Use `when-let` to make the check cleaner and avoid errors if
-    ;; buffer-file-name is nil (for non-file buffers).
     (when-let* ((filename (buffer-file-name))
-                ((string-match-p (rx "/ansible/" (0+ anything) "/tasks/") filename)))
+                ((string-match-p
+		  (rx "/ansible/" (0+ anything) "/tasks/")
+		  filename)))
       (ansible-mode 1)
       (eglot-ensure)))
-    :hook (yaml-mode . stribb-yaml--enable-ansible-if-needed))
+    :hook (yaml-ts-mode . stribb-yaml--enable-ansible-if-needed))
 
 (use-package puppet-mode
   :mode "\\.pp\\'")

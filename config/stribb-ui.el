@@ -102,7 +102,7 @@
 
 (use-package highlight-indentation
   :hook
-  (yaml-mode . highlight-indentation-mode))
+  (yaml-ts-mode . highlight-indentation-mode))
 
 (add-hook 'after-init-hook
           (lambda ()
