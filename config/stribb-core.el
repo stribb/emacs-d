@@ -310,10 +310,6 @@ If NOEXPAND? don't expand the file name."
   (setq treesit-auto-install t)
   (treesit-auto-add-to-auto-mode-alist))
 
-;; The track-changes package is needed for eglot.
-;(use-package track-changes
-;    :straight (track-changes :type git :host github :repo "emacs-straight/track-changes"))  ;; WHY??!
-
 (use-package eglot
   :demand t
   :functions eglot-alternatives eglot-format-buffer eglot-ensure
