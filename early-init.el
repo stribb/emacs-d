@@ -74,6 +74,8 @@ else sets it to val."
   (scroll-bar-mode -1))
 (when (fboundp 'horizontal-scroll-bar-mode)
   (horizontal-scroll-bar-mode -1))
+(when (fboundp 'tab-bar-mode)
+  (tab-bar-mode -1))
 
 (provide 'early-init)
 ;;; early-init.el ends here

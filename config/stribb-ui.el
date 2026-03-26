@@ -88,7 +88,9 @@
   (global-ligature-mode t))
 
 (setq-default default-frame-alist
-              (append '((tool-bar-lines . 0))
+              (append '((tool-bar-lines . 0)
+                        (vertical-scroll-bars)
+                        (tab-bar-lines . 0))
                       (when (display-graphic-p)
                         '((alpha-background . 100)
                           (height . 70)
