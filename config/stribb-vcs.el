@@ -6,6 +6,9 @@
 
 ;;; Code:
 
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'vc-handled-backends 'JJ t)
+
 ;; https://github.com/alphapapa/unpackaged.el#hydra
 (use-package smerge-mode
   :functions alphapapa/smerge-hydra/body
