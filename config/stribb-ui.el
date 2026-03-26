@@ -25,7 +25,14 @@
   (doom-modeline-mode 1)
 
   ;; Hide buffer encoding (UTF-8, LF, etc.) - only show when unusual
-  (setq doom-modeline-buffer-encoding nil)
+  (setq doom-modeline-buffer-encoding nil
+        doom-modeline-buffer-file-name-style 'buffer-name)
+
+  ;; Click buffer name to copy file path (bfn), not cycle buffers
+  (define-key mode-line-buffer-identification-keymap [mode-line mouse-1] #'bfn)
+  (define-key mode-line-buffer-identification-keymap [header-line mouse-1] #'bfn)
+  (define-key mode-line-buffer-identification-keymap [mode-line mouse-3] #'bfn)
+  (define-key mode-line-buffer-identification-keymap [header-line mouse-3] #'bfn)
 
   (doom-modeline-def-segment auto-revert
     "Indicator when the buffer is being auto-reverted."

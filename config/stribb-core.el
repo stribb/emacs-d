@@ -651,19 +651,23 @@ With ARG, go ARG forward or backward."
 (defvar non-file-modes '(eshell-mode dired-mode magit-mode)
   "List of directory-located non-file-modes.")
 
-(defun prelude-copy-file-name-to-clipboard ()
-  "Copy the current buffer file name to the clipboard."
-  (interactive)
+(defun stribb/buffer-file-name (&optional arg)
+  "Copy buffer file name to clipboard.
+With prefix ARG, copy as repo-relative //path, or full path if
+not under VCS."
+  (interactive "P")
   (let* ((buffer (or (buffer-base-buffer) (current-buffer)))
-         (mode (with-current-buffer buffer major-mode))
-         (filename (if (provided-mode-derived-p mode non-file-modes)
-                       default-directory
-                     (buffer-file-name buffer))))
+         (filename (or (buffer-file-name buffer) default-directory)))
     (when filename
-      (kill-new filename)
-      (message "Copied buffer file name '%s' to the clipboard." filename))))
-(defalias 'bfn 'prelude-copy-file-name-to-clipboard)
+      (let* ((root (and arg (vc-root-dir)))
+             (result (if root
+                         (concat "//" (f-relative (f-canonical filename)
+                                                   (f-canonical root)))
+                       filename)))
+        (kill-new result)
+        (message "Copied %s" result)))))
 
+(defalias 'bfn #'stribb/buffer-file-name)
 
 (defmacro assert (test-form)
   "Asserts that TEST-FORM evaluate to non-nil."
@@ -700,8 +704,26 @@ With ARG, go ARG forward or backward."
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+(require 'f)
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
+
+(defvar stribb/generic-filenames
+  '("__main__.py" "__init__.py" "conftest.py" "setup.py" "setup.cfg"
+    "Makefile" "BUILD" "BUILD.bazel" "Dockerfile"
+    "index.js" "index.ts" "index.tsx" "mod.rs" "lib.rs" "main.rs"
+    "main.go")
+  "Filenames too generic to identify on their own.")
+
+(defun stribb/meaningful-buffer-name ()
+  "For generic filenames, rename buffer to include parent directory."
+  (when-let* ((fname buffer-file-name)
+              (base (f-filename fname))
+              (_ (member base stribb/generic-filenames))
+              (parent (f-filename (f-dirname fname))))
+    (rename-buffer (format "%s/%s" parent base) t)))
+
+(add-hook 'find-file-hook #'stribb/meaningful-buffer-name)
 
 (require 'saveplace)
 (setq-default save-place t)
