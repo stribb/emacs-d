@@ -24,6 +24,10 @@
   "Return non-nil if FILE is in a jj repository."
   (not (null (vc-jj-root file))))
 
+(defun vc-jj-checkout-model (_files)
+  "JJ uses implicit checkout — all files are always writable."
+  'implicit)
+
 (defun vc-jj-state (_file)
   "Return the vc state of FILE.  Always `up-to-date' for now."
   'up-to-date)
