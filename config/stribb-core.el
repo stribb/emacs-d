@@ -478,7 +478,7 @@ If NOEXPAND? don't expand the file name."
   :after yaml-ts-mode
   :functions ansible-mode
   :init
-  (defun stribb-yaml--enable-ansible-if-needed ()
+  (defun stribb/maybe-enable-ansible ()
     "Activate `ansible-mode` and `eglot` for Ansible project files."
     (when-let* ((filename (buffer-file-name))
                 ((string-match-p
@@ -486,7 +486,7 @@ If NOEXPAND? don't expand the file name."
 		  filename)))
       (ansible-mode 1)
       (eglot-ensure)))
-    :hook (yaml-ts-mode . stribb-yaml--enable-ansible-if-needed))
+    :hook (yaml-ts-mode . stribb/maybe-enable-ansible))
 
 (use-package puppet-mode
   :mode "\\.pp\\'")

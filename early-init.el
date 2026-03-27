@@ -25,7 +25,7 @@
   (put name 'feature-documentation doc)
   name)
 
-(defun stribb-exp-parse (switch)
+(defun stribb/exp-parse (switch)
   "Set exp to a value based on SWITCH argument.
 
 If it starts with + or has no value, enable it;
@@ -55,9 +55,9 @@ else sets it to val."
         (princ (format "Error: Unknown experimental feature: %s\n" feature) #'external-debugging-output)
         (kill-emacs 1)))))
 
-(add-to-list 'command-switch-alist '("--exp" . stribb-exp-parse))
+(add-to-list 'command-switch-alist '("--exp" . stribb/exp-parse))
 
-(defun stribb-feature-enabled-p (feature)
+(defun stribb/feature-enabled-p (feature)
   "Check if FEATURE is enabled in experimental features."
   (cdr (assq feature stribb-exp-alist)))
 
