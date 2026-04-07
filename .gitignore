@@ -23,6 +23,7 @@ auto-save-list/
 flycheck_init.el
 /ielm-history.eld
 /.emacs.desktop.bak
+.emacs-restart-desktop
 /straight/*
 !/straight/versions/
 **/flycheck_**

@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+
+echo "==> Emacs package upgrade (straight.el)"
+echo ""
+echo "This will:"
+echo "  1. Pull all packages to latest"
+echo "  2. Rebuild all packages"
+echo "  3. Freeze versions to straight/versions/default.el"
+echo ""
+read -p "Continue? (y/N) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Aborted."
+    exit 0
+fi
+
+echo ""
+echo "==> Pulling all packages..."
+emacs --batch --eval "(progn
+  (load-file \"~/.emacs.d/init.el\")
+  (straight-pull-all))"
+
+echo ""
+echo "==> Rebuilding all packages..."
+emacs --batch --eval "(progn
+  (load-file \"~/.emacs.d/init.el\")
+  (straight-rebuild-all))"
+
+echo ""
+echo "==> Freezing versions..."
+emacs --batch --eval "(progn
+  (load-file \"~/.emacs.d/init.el\")
+  (straight-freeze-versions))"
+
+echo ""
+echo "✅ Done! Packages upgraded and versions frozen."
+echo ""
+echo "   Next steps:"
+echo "   - Restart Emacs and smoke-test"
+echo "   - cd ~/.emacs.d && git diff straight/versions/default.el"
+echo "   - git commit -am 'Update straight.el package versions'"

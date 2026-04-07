@@ -1,0 +1,75 @@
+#!/bin/bash
+set -e  # Exit on error
+
+PINNED_DEPS=(tree-sitter libgccjit gcc)
+
+echo "==> Emacs + native deps upgrade script"
+echo ""
+echo "This will:"
+echo "  1. Unpin ${PINNED_DEPS[*]}"
+echo "  2. Upgrade them"
+echo "  3. Reinstall emacs-plus@31 (rebuild against new deps)"
+echo "  4. Re-pin ${PINNED_DEPS[*]}"
+echo ""
+echo "This may take 20-30 minutes."
+echo ""
+read -p "Continue? (y/N) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Aborted."
+    exit 0
+fi
+
+echo ""
+echo "==> Unpinning ${PINNED_DEPS[*]}..."
+for dep in "${PINNED_DEPS[@]}"; do
+  brew unpin "$dep" || true
+done
+
+echo ""
+echo "==> Upgrading ${PINNED_DEPS[*]}..."
+brew upgrade "${PINNED_DEPS[@]}"
+
+echo ""
+echo "==> Reinstalling emacs-plus@31 (this will take a while)..."
+brew reinstall emacs-plus@31
+
+echo ""
+echo "==> Re-pinning ${PINNED_DEPS[*]}..."
+for dep in "${PINNED_DEPS[@]}"; do
+  brew pin "$dep"
+done
+
+echo ""
+echo "==> Testing Emacs..."
+emacs --version
+
+echo ""
+echo "==> Cloning Emacs.app to ~/Applications for Spotlight (APFS copy-on-write)..."
+rm -rf ~/Applications/Emacs.app
+EMACS_PATH=$(brew --prefix emacs-plus@31)/Emacs.app
+cp -Rc "$EMACS_PATH" ~/Applications/
+
+echo ""
+echo "==> Cleaning stale native compilation caches..."
+CURRENT_HASH=$(emacs --batch --eval "(message \"%s\" comp-native-version-dir)" 2>&1 | grep -v "^$")
+echo "   Current Emacs build: $CURRENT_HASH"
+if [ -d ~/.emacs.d/eln-cache ]; then
+  for dir in ~/.emacs.d/eln-cache/*; do
+    if [ "$(basename "$dir")" != "$CURRENT_HASH" ]; then
+      echo "   Removing stale cache: $(basename "$dir")"
+      rm -rf "$dir"
+    fi
+  done
+fi
+
+echo ""
+echo "✅ Done! Emacs and native deps upgraded successfully."
+echo "   Pinned: ${PINNED_DEPS[*]}"
+echo "   ~/Applications/Emacs.app updated for Spotlight."
+echo "   Stale native compilation caches cleaned."
+echo ""
+echo "   Next steps:"
+echo "   - Restart Emacs"
+echo "   - If tree-sitter grammars broke: M-x treesit-auto-install-all"
+echo "   - If native-comp broke: M-x straight-rebuild-all"
