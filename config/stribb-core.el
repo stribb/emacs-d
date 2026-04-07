@@ -29,12 +29,12 @@
   "Check if this was a restart and restore desktop if so."
   (let ((desktop-file (expand-file-name stribb/restart-desktop-file user-emacs-directory)))
     (when (file-exists-p desktop-file)
-      ;; Clean up the restart desktop file after it's loaded
-      (add-hook 'desktop-after-read-hook
+      (letrec ((cleanup-fn
                 (lambda ()
-                  (let ((restart-file (expand-file-name stribb/restart-desktop-file user-emacs-directory)))
-                    (when (file-exists-p restart-file)
-                      (delete-file restart-file)))))
+                  (when (file-exists-p desktop-file)
+                    (delete-file desktop-file))
+                  (remove-hook 'desktop-after-read-hook cleanup-fn))))
+        (add-hook 'desktop-after-read-hook cleanup-fn))
       (dlet ((desktop-base-file-name stribb/restart-desktop-file))
         (desktop-read user-emacs-directory)))))
 
