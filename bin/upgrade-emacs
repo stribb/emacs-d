@@ -64,12 +64,30 @@ if [ -d ~/.emacs.d/eln-cache ]; then
 fi
 
 echo ""
-echo "✅ Done! Emacs and native deps upgraded successfully."
+echo "==> Verifying tree-sitter..."
+if emacs --batch --eval '(unless (treesit-language-available-p '\''python) (kill-emacs 1))' 2>/dev/null; then
+  echo "   tree-sitter: OK"
+else
+  echo "   ⚠️  tree-sitter grammars need recompiling."
+  echo "   Run: emacs --batch -l ~/.emacs.d/init.el --eval '(treesit-auto-install-all)'"
+  WARNINGS=1
+fi
+
+echo ""
+echo "==> Verifying native-comp..."
+if emacs --batch --eval '(progn (unless (native-comp-available-p) (kill-emacs 1)) (native-compile (lambda (x) x)))' 2>/dev/null; then
+  echo "   native-comp: OK"
+else
+  echo "   ⚠️  native-comp is broken. Run: M-x straight-rebuild-all"
+  WARNINGS=1
+fi
+
+echo ""
+if [ "${WARNINGS:-0}" = "1" ]; then
+  echo "⚠️  Done with warnings — see above."
+else
+  echo "✅ Done! Emacs and native deps upgraded successfully."
+fi
 echo "   Pinned: ${PINNED_DEPS[*]}"
 echo "   ~/Applications/Emacs.app updated for Spotlight."
 echo "   Stale native compilation caches cleaned."
-echo ""
-echo "   Next steps:"
-echo "   - Restart Emacs"
-echo "   - If tree-sitter grammars broke: M-x treesit-auto-install-all"
-echo "   - If native-comp broke: M-x straight-rebuild-all"
