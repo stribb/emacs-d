@@ -68,9 +68,14 @@ echo "==> Verifying tree-sitter..."
 if emacs --batch --eval '(unless (treesit-language-available-p '\''python) (kill-emacs 1))' 2>/dev/null; then
   echo "   tree-sitter: OK"
 else
-  echo "   ⚠️  tree-sitter grammars need recompiling."
-  echo "   Run: emacs --batch -l ~/.emacs.d/init.el --eval '(treesit-auto-install-all)'"
-  WARNINGS=1
+  echo "   tree-sitter grammars need recompiling — fixing..."
+  emacs --batch -l ~/.emacs.d/init.el --eval '(treesit-auto-install-all)' 2>&1
+  if emacs --batch --eval '(unless (treesit-language-available-p '\''python) (kill-emacs 1))' 2>/dev/null; then
+    echo "   tree-sitter: OK after recompile"
+  else
+    echo "   ⚠️  tree-sitter still broken after recompile"
+    WARNINGS=1
+  fi
 fi
 
 echo ""
@@ -78,8 +83,14 @@ echo "==> Verifying native-comp..."
 if emacs --batch --eval '(progn (unless (native-comp-available-p) (kill-emacs 1)) (native-compile (lambda (x) x)))' 2>/dev/null; then
   echo "   native-comp: OK"
 else
-  echo "   ⚠️  native-comp is broken. Run: M-x straight-rebuild-all"
-  WARNINGS=1
+  echo "   native-comp is broken — rebuilding packages..."
+  emacs --batch -l ~/.emacs.d/init.el --eval '(straight-rebuild-all)' 2>&1
+  if emacs --batch --eval '(progn (unless (native-comp-available-p) (kill-emacs 1)) (native-compile (lambda (x) x)))' 2>/dev/null; then
+    echo "   native-comp: OK after rebuild"
+  else
+    echo "   ⚠️  native-comp still broken after rebuild"
+    WARNINGS=1
+  fi
 fi
 
 echo ""
