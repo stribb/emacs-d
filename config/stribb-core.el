@@ -49,14 +49,26 @@
   ;; Restore desktop after a short delay to let themes/faces settle
   (run-with-timer 0.1 nil #'stribb/maybe-restore-desktop))
 
-(defun stribb/restart-emacs ()
-  "Save desktop and restart Emacs, restoring all open buffers."
-  (interactive)
+(defun stribb/save-desktop-state ()
+  "Internal helper to save the current desktop state."
   (dlet ((desktop-base-file-name stribb/restart-desktop-file))
-    (desktop-save user-emacs-directory t))
+    (desktop-save user-emacs-directory t)))
+
+(defun stribb/restart-emacs ()
+  "Save the current desktop and restart Emacs."
+  (interactive)
+  (stribb/save-desktop-state)
   (restart-emacs))
 
+(defun stribb/quit-emacs ()
+  "Save the current desktop and quit Emacs."
+  (interactive)
+  (stribb/save-desktop-state)
+  (save-buffers-kill-emacs))
+
 (defalias 'rrr 'stribb/restart-emacs)
+(defalias 'qqq 'stribb/quit-emacs)
+
 
 (stribb/optimize-startup)
 
