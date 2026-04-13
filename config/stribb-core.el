@@ -77,6 +77,15 @@
 (column-number-mode 1)
 (global-auto-revert-mode 1)
 
+(use-package auto-revert-merge
+  :straight nil
+  :config
+  (auto-revert-merge-mode 1)
+  (add-hook 'auto-revert-merge-conflict-hook
+            (lambda ()
+              (when (fboundp 'alphapapa/smerge-hydra/body)
+                (alphapapa/smerge-hydra/body)))))
+
 ;; Straight.
 ;; This is necessary to tell `straight' where git is.
 (add-to-list 'exec-path "/usr/local/bin" t)
