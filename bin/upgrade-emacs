@@ -94,6 +94,11 @@ else
 fi
 
 echo ""
+echo "==> Recompiling all straight.el packages..."
+emacs --batch -l ~/.emacs.d/init.el --eval '(straight-rebuild-all)' 2>&1 || true
+echo "   straight-rebuild-all: done"
+
+echo ""
 if [ "${WARNINGS:-0}" = "1" ]; then
   echo "⚠️  Done with warnings — see above."
 else
@@ -102,3 +107,4 @@ fi
 echo "   Pinned: ${PINNED_DEPS[*]}"
 echo "   ~/Applications/Emacs.app updated for Spotlight."
 echo "   Stale native compilation caches cleaned."
+echo "   All packages recompiled."
