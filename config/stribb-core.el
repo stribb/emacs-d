@@ -397,7 +397,7 @@ If NOEXPAND? don't expand the file name."
 
   (setq-default eglot-workspace-configuration
         '(:gopls (:gofumpt t)
-          :basedpyright (:analysis (:typeCheckingMode "standard"
+          :basedpyright (:analysis (:typeCheckingMode "all"
                                     :autoSearchPaths t
                                     :useLibraryCodeForTypes t
                                     :diagnosticMode "workspace"))
