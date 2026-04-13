@@ -534,13 +534,35 @@ If NOEXPAND? don't expand the file name."
 (use-package json-mode
   :mode ("\\.jso?n\\'" . json-mode))
 
+(use-package indent-bars
+  :hook (yaml-ts-mode . indent-bars-mode)
+  :custom
+  (indent-bars-treesit-support t)
+  (indent-bars-color '(shadow :face-bg nil :blend 0.4))
+  (indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 0.3))
+  (indent-bars-highlight-current-depth '(:blend 0.5))
+  (indent-bars-pattern ".")
+  (indent-bars-width-frac 0.15)
+  :config
+  ;; yaml-ts-mode has no indent variable that indent-bars recognizes,
+  ;; so its guess-spacing falls through to the default of 4.
+  (add-hook 'yaml-ts-mode-hook
+            (lambda () (setq-local indent-bars-spacing-override 2))))
+
 (use-package yaml-ts-mode
   :straight nil
   :mode (("\\.ya?ml\\'" . yaml-ts-mode)
          ("\\.crd\\'" . yaml-ts-mode))
   :magic ("^# vi: set ft=yaml" . yaml-ts-mode)
   :hook (yaml-ts-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
-  :bind (:map yaml-ts-mode-map ("C-m" . newline-and-indent)))
+  :bind (:map yaml-ts-mode-map ("C-m" . newline-and-indent))
+  :config
+  ;; yaml-ts-mode has no indent-offset variable; editorconfig maps
+  ;; indent_size to yaml-indent-offset which doesn't exist here.
+  ;; Fix the alist so editorconfig sets tab-width instead — that's what
+  ;; eglot sends as tabSize to yaml-language-server for formatting.
+  (setf (alist-get 'yaml-ts-mode editorconfig-indentation-alist)
+        '(tab-width)))
 
 (use-package ansible  ; a minor mode
   :after yaml-ts-mode
