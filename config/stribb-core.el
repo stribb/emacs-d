@@ -69,6 +69,40 @@
 (defalias 'rrr 'stribb/restart-emacs)
 (defalias 'qqq 'stribb/quit-emacs)
 
+(defun stribb/eval-custom ()
+  "Eval `use-package' :custom entries.
+On a :custom keyword: eval every (VAR VALUE) form in the block.
+Anywhere inside a (VAR VALUE) form: walk up and eval that entry.
+Calls `customize-set-variable' so setters and type-checks run."
+  (interactive)
+  (save-excursion
+    (if (eq (sexp-at-point) :custom)
+        ;; Eval every entry in the :custom block.
+        (forward-sexp)
+          (let ((entries (cl-loop for sexp = (ignore-errors
+                                               (forward-sexp)
+                                               (sexp-at-point))
+                                  while (and (listp sexp) (symbolp (car sexp)))
+                                  collect sexp)))
+            (mapc (lambda (sexp)
+                    (customize-set-variable (car sexp) (eval (cadr sexp) t)))
+                  entries)
+            (message "Set %d custom variable%s"
+                     (length entries)
+                     (if (= (length entries) 1) "" "s"))))
+      ;; Single entry: try sexp at point (handles point after closing
+      ;; paren), otherwise go up one level.
+      (let ((sexp (sexp-at-point)))
+        (unless (and (listp sexp) (>= (length sexp) 2) (symbolp (car sexp)))
+          (backward-up-list 1 t t)
+          (setq sexp (sexp-at-point)))
+        (unless (and (listp sexp) (>= (length sexp) 2) (symbolp (car sexp)))
+          (user-error "Not a (VAR VALUE) form"))
+        (customize-set-variable (car sexp) (eval (cadr sexp) t))
+        (message "Set %s → %S" (car sexp) (eval (cadr sexp) t)))))
+
+(with-eval-after-load 'elisp-mode
+  (define-key emacs-lisp-mode-map (kbd "C-c C-x") #'stribb/eval-custom))
 
 (stribb/optimize-startup)
 

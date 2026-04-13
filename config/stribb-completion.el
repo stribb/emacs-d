@@ -101,7 +101,10 @@
               (cons (buffer-substring-no-properties (car bounds) (cdr bounds))
                     bounds)))))
 
-  (add-to-list 'embark-target-finders 'stribb/embark-target-eglot-identifier))
+  (add-to-list 'embark-target-finders 'stribb/embark-target-eglot-identifier)
+
+  (define-key embark-expression-map (kbd "c") #'stribb/eval-custom)
+  (define-key embark-symbol-map (kbd "c") #'stribb/eval-custom))
 
 (use-package embark-consult
   :after (embark consult))
