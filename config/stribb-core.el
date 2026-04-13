@@ -336,21 +336,31 @@ If NOEXPAND? don't expand the file name."
   (eglot-code-action-suggestion-face ((t (:bold t :underline t))))
   (eglot-code-action-indicator-face ((t (:bold t :underline t))))
   :config
-  ;; Use flymake for LSP diagnostics, disable flycheck in LSP-managed buffers
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
+              ;; Use flymake for LSP diagnostics, disable flycheck in
+              ;; LSP-managed buffers
               (when flycheck-mode
                 (flycheck-mode -1))
-              (flymake-mode 1)))
+              (flymake-mode 1)
+              (add-hook 'before-save-hook #'stribb/eglot-on-save nil t)))
 
-  (setq eglot-workspace-configuration
-        '((:gopls . ((gofumpt . t)))
-          ;; Basedpyright configuration
-          (:basedpyright . (:analysis (:typeCheckingMode "standard"
-                                       :autoSearchPaths t
-                                       :useLibraryCodeForTypes t
-                                       :diagnosticMode "workspace")))
-	  (:ruff . (:lint (:enable t) :format (:enable t)))))
+  (defun stribb/eglot-on-save ()
+    "Fix lint issues, organize imports, and format buffer via eglot before saving."
+    (when (eglot-managed-p)
+      (ignore-errors (eglot-code-actions (point-min) (point-max) "source.fixAll" t))
+      (ignore-errors (eglot-code-action-organize-imports (point-min) (point-max)))
+      (eglot-format-buffer)))
+
+  (setq-default eglot-workspace-configuration
+        '(:gopls (:gofumpt t)
+          :basedpyright (:analysis (:typeCheckingMode "standard"
+                                    :autoSearchPaths t
+                                    :useLibraryCodeForTypes t
+                                    :diagnosticMode "workspace"))
+          :ruff (:lint (:enable t)
+                 :format (:enable t)
+                 :organizeImports t)))
 
   (setq eglot-server-programs
 	(append '(((python-ts-mode python-mode) .
