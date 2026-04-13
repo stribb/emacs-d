@@ -7,6 +7,7 @@
 
 ;;; Code:
 (require 'use-package)
+(require 'cl-lib)
 
 ;; Vertico: Modern vertical completion UI
 (use-package vertico
@@ -65,7 +66,42 @@
   :bind (("C-." . embark-act)
          ("C-h B" . embark-bindings))
   :config
-  (setq prefix-help-command #'embark-prefix-help-command))
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  (setq embark-target-finders
+        (cl-substitute 'stribb/embark-target-expression-in-lisp
+                       'embark-target-expression-at-point
+                       embark-target-finders))
+
+  (defun stribb/embark-target-expression-in-lisp ()
+    "Like `embark-target-expression-at-point', but only in lisp modes."
+    (when (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'lisp-interaction-mode
+                          'scheme-mode 'clojure-mode 'ielm-mode)
+      (embark-target-expression-at-point)))
+
+  ;; Eglot actions on identifiers when eglot is active.
+  (defvar-keymap embark-eglot-map
+    :doc "Actions for identifiers when eglot is active."
+    "R" #'eglot-rename
+    "a" #'eglot-code-actions
+    "h" #'eldoc
+    "r" #'xref-find-references
+    "d" #'xref-find-definitions
+    "i" #'eglot-find-implementation
+    "t" #'eglot-find-typeDefinition)
+
+  (push '(eglot-identifier embark-eglot-map) embark-keymap-alist)
+
+  (defun stribb/embark-target-eglot-identifier ()
+    "Target identifier at point when eglot is managing the buffer."
+    (when (and (bound-and-true-p eglot--managed-mode)
+               (thing-at-point 'symbol))
+      (let ((bounds (bounds-of-thing-at-point 'symbol)))
+        (cons 'eglot-identifier
+              (cons (buffer-substring-no-properties (car bounds) (cdr bounds))
+                    bounds)))))
+
+  (add-to-list 'embark-target-finders 'stribb/embark-target-eglot-identifier))
 
 (use-package embark-consult
   :after (embark consult))

@@ -51,8 +51,8 @@
     '(compilation objed-state misc-info project-name persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs auto-revert check time)))
 
 (use-package color-identifiers-mode
-  :hook (prog-mode-hook . color-identifiers-mode)
   :config
+  (global-color-identifiers-mode)
   (setq color-identifiers:num-colors 15
         color-identifiers:min-color-saturation 0.3
         color-identifiers:max-color-saturation 0.5)

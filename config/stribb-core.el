@@ -324,14 +324,14 @@ If NOEXPAND? don't expand the file name."
 
 (use-package eglot
   :demand t
-  :functions eglot-alternatives eglot-format-buffer eglot-ensure
+  :functions eglot-format-buffer eglot-ensure
              eglot-code-action-quickfix eglot-rename
   :bind ( :map eglot-mode-map
           ("s-<return>" . eglot-code-action-quickfix)
           ("M-r" . eglot-rename))
   :hook
-  ((python-mode-hook python-ts-mode-hook) . eglot-ensure)
-  ((go-mode-hook go-ts-mode-hook) . eglot-ensure)
+  ((python-mode-hook python-ts-mode-hook go-mode-hook go-ts-mode-hook
+	yaml-mode-hook yaml-ts-mode-hook toml-ts-mode-hook) . eglot-ensure)
   :custom-face
   (eglot-code-action-suggestion-face ((t (:bold t :underline t))))
   (eglot-code-action-indicator-face ((t (:bold t :underline t))))
@@ -349,14 +349,17 @@ If NOEXPAND? don't expand the file name."
           (:basedpyright . (:analysis (:typeCheckingMode "standard"
                                        :autoSearchPaths t
                                        :useLibraryCodeForTypes t
-                                       :diagnosticMode "openFilesOnly")))))
+                                       :diagnosticMode "workspace")))
+	  (:ruff . (:lint (:enable t) :format (:enable t)))))
 
-  ;; Use basedpyright for Python (fallback to pyright, then pylsp)
-  (add-to-list 'eglot-server-programs
-               `((python-ts-mode python-mode) .
-                 ,(eglot-alternatives '(("basedpyright-langserver" "--stdio")
-                                       ("pyright-langserver" "--stdio")
-                                       ("pylsp")))))
+  (setq eglot-server-programs
+	(append '(((python-ts-mode python-mode) .
+		   ("rass" "basedruff"))
+		  ((yaml-ts-mode yaml-mode) .
+		   ("yaml-language-server" "--stdio"))
+		  ((toml-ts-mode toml-mode) .
+		   ("taplo" "lsp" "stdio")))
+		 eglot-server-programs))
   (when (eq window-system 'ns)
     (define-key key-translation-map (kbd "s-<mouse-1>") (kbd "<mouse-2>"))))
 
