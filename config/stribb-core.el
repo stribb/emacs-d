@@ -292,7 +292,6 @@ Calls `customize-set-variable' so setters and type-checks run."
 (use-package company
   :functions company-mode global-company-mode
   :bind (("<C-tab>" . company-complete))
-  :init (setq completion-styles '(basic partial-completion emacs22 initials))
   :delight " Co"
   :config
   (company-mode)
