@@ -111,15 +111,6 @@ Calls `customize-set-variable' so setters and type-checks run."
 (column-number-mode 1)
 (global-auto-revert-mode 1)
 
-(use-package auto-revert-merge
-  :straight nil
-  :config
-  (auto-revert-merge-mode 1)
-  (add-hook 'auto-revert-merge-conflict-hook
-            (lambda ()
-              (when (fboundp 'alphapapa/smerge-hydra/body)
-                (alphapapa/smerge-hydra/body)))))
-
 ;; Straight.
 ;; This is necessary to tell `straight' where git is.
 (add-to-list 'exec-path "/usr/local/bin" t)
@@ -170,6 +161,15 @@ Calls `customize-set-variable' so setters and type-checks run."
 ;;     package being loaded.
 ;;
 (setq use-package-hook-name-suffix nil)
+
+(use-package auto-revert-merge
+  :straight nil
+  :config
+  (auto-revert-merge-mode 1)
+  (add-hook 'auto-revert-merge-conflict-hook
+            (lambda ()
+              (when (fboundp 'alphapapa/smerge-hydra/body)
+                (alphapapa/smerge-hydra/body)))))
 (setq use-package-compute-statistics t)
 
 (setq flycheck-emacs-lisp-load-path 'inherit)
