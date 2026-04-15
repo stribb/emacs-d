@@ -118,7 +118,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-hook 'magit-mode (lambda () (num3-mode nil))))
 
 (use-package diff-hl
-  :functions global-diff-hl-mode diff-hl-flydiff-mode diff-hl-magit-post-refresh
+  :functions global-diff-hl-mode diff-hl-magit-post-refresh
   :after magit
   :config
   (global-diff-hl-mode)

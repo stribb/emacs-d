@@ -1,73 +1,9 @@
-;;; package --- stribb-core config  -*- lexical-binding: t; -*-
+;;; stribb-core.el --- Package declarations and core config  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Make Emacs more comfortable to use.
+;; Assumes init.el has already bootstrapped straight.el and use-package.
 
 ;;; Code:
-
-;; Speed up init.
-(defvar file-name-handler-alist-old file-name-handler-alist)
-
-(defun stribb/optimize-startup ()
-  "Optimize Emacs startup performance."
-  (setq
-   debug-on-error t
-   file-name-handler-alist nil
-   message-log-max 16384
-   gc-cons-threshold 4026531840 ; Start with a high threshold
-   gc-cons-percentage 10.5
-   auto-window-vscroll nil)
-  (dolist (d '("config" "elisp-misc"))
-    (add-to-list 'load-path (concat user-emacs-directory d)))
-  (setq inhibit-startup-screen t)
-  (add-hook 'after-init-hook #'stribb/restore-vars :append))
-
-(defvar stribb/restart-desktop-file ".emacs-restart-desktop"
-  "Desktop file that also serves as restart flag in `user-emacs-directory'.")
-
-(defun stribb/maybe-restore-desktop ()
-  "Check if this was a restart and restore desktop if so."
-  (let ((desktop-file (expand-file-name stribb/restart-desktop-file user-emacs-directory)))
-    (when (file-exists-p desktop-file)
-      (letrec ((cleanup-fn
-                (lambda ()
-                  (when (file-exists-p desktop-file)
-                    (delete-file desktop-file))
-                  (remove-hook 'desktop-after-read-hook cleanup-fn))))
-        (add-hook 'desktop-after-read-hook cleanup-fn))
-      (dlet ((desktop-base-file-name stribb/restart-desktop-file))
-        (desktop-read user-emacs-directory)))))
-
-(defun stribb/restore-vars ()
-  "Restore variables and perform post-init tasks."
-  (setq
-   debug-on-error nil
-   file-name-handler-alist file-name-handler-alist-old
-   gc-cons-threshold 800000    ; Reset to a more reasonable value
-   gc-cons-percentage 0.1)
-  (run-with-idle-timer 10 nil #'garbage-collect)
-  ;; Restore desktop after a short delay to let themes/faces settle
-  (run-with-timer 0.1 nil #'stribb/maybe-restore-desktop))
-
-(defun stribb/save-desktop-state ()
-  "Internal helper to save the current desktop state."
-  (dlet ((desktop-base-file-name stribb/restart-desktop-file))
-    (desktop-save user-emacs-directory t)))
-
-(defun stribb/restart-emacs ()
-  "Save the current desktop and restart Emacs."
-  (interactive)
-  (stribb/save-desktop-state)
-  (restart-emacs))
-
-(defun stribb/quit-emacs ()
-  "Save the current desktop and quit Emacs."
-  (interactive)
-  (stribb/save-desktop-state)
-  (save-buffers-kill-emacs))
-
-(defalias 'rrr 'stribb/restart-emacs)
-(defalias 'qqq 'stribb/quit-emacs)
 
 (defun stribb/eval-custom ()
   "Eval `use-package' :custom entries.
@@ -104,80 +40,17 @@ Calls `customize-set-variable' so setters and type-checks run."
 (with-eval-after-load 'elisp-mode
   (define-key emacs-lisp-mode-map (kbd "C-c C-x") #'stribb/eval-custom))
 
-(stribb/optimize-startup)
-
-(auto-compression-mode 1)
-(editorconfig-mode 1)
-(column-number-mode 1)
-(global-auto-revert-mode 1)
-
-;; Straight.
-;; This is necessary to tell `straight' where git is.
-(add-to-list 'exec-path "/usr/local/bin" t)
-(setenv "PATH" (string-join exec-path ":"))
-
-;; "Some of [the Straight variables] must be set *before* the
-;; bootstrap code runs..."
-(setq straight-use-package-by-default t)
-(setq straight-built-in-pseudo-packages
-      '(emacs nadvice python image-mode project flymake xref))
-(setq straight-recipe-repositories
-      '(org-elpa melpa gnu-elpa-mirror el-get emacsmirror-mirror))
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-
 
-;;; General packages
+;;; Packages
 
-;;; https://github.com/jwiegley/use-package
-;;
-;; :preface
-;;   Timing: Before both :init and :config
-;;   Usage: Define helper functions/macros needed by other parts of the
-;;     declaration.
-;;
-;; :init
-;;   Timing: Before package loading
-;;   Usage: Set variables or configurations required before initialization.
-;;
-;; :config
-;;   Timing: After package loading
-;;   Usage: Activate modes, add hooks, or perform setup that depends on the
-;;     package being loaded.
-;;
-(setq use-package-hook-name-suffix nil)
-
-(use-package auto-revert-merge
-  :straight nil
-  :config
-  (auto-revert-merge-mode 1)
-  (add-hook 'auto-revert-merge-conflict-hook
-            (lambda ()
-              (when (fboundp 'alphapapa/smerge-hydra/body)
-                (alphapapa/smerge-hydra/body)))))
-(setq use-package-compute-statistics t)
-
-(setq flycheck-emacs-lisp-load-path 'inherit)
-
-(eval-when-compile
-  (require 'use-package)
-  (require 'use-package-delight))
-(require 'bind-key)
+;; (use-package auto-revert-merge
+;;   :straight nil
+;;   :config
+;;   (auto-revert-merge-mode 1)
+;;   (add-hook 'auto-revert-merge-conflict-hook
+;;             (lambda ()
+;;               (when (fboundp 'alphapapa/smerge-hydra/body)
+;;                 (alphapapa/smerge-hydra/body)))))
 
 (use-package exec-path-from-shell
   :when (or (daemonp)
@@ -237,7 +110,8 @@ Calls `customize-set-variable' so setters and type-checks run."
   :bind ("C-;" . iedit-mode))
 
 (use-package multiple-cursors
-  :functions hydra-multiple-cursors/body mc/edit-lines mc/mark-all-like-this
+  :functions hydra-multiple-cursors/body mc/edit-lines
+             mc/mark-all-like-this
              mc/insert-numbers mc/insert-letters
              mc/mark-next-like-this mc/unmark-next-like-this
              mc/mark-previous-like-this mc/unmark-previous-like-this
@@ -469,6 +343,14 @@ If NOEXPAND? don't expand the file name."
   :functions global-flycheck-mode flycheck-mode flymake-mode
   :init
   (global-flycheck-mode 1)
+  :config
+  ;; Config files aren't libraries — the byte-compiler subprocess can't
+  ;; load our packages, so every use-package form generates false warnings.
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (when (and buffer-file-name
+                         (string-match-p "/config/" buffer-file-name))
+                (flycheck-mode -1))))
 
   (defun stribb/ensure-flycheck-over-flymake ()
   "Ensure `flymake-mode' is disabled if `flycheck-mode' is active."

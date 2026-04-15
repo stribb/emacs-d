@@ -1,8 +1,5 @@
 ;;; auto-revert-merge.el --- Three-way merge for auto-revert  -*- lexical-binding: t; -*-
 
-;; Copyright (c) 2026 Arista Networks, Inc.  All rights reserved.
-;; Arista Networks, Inc. Confidential and Proprietary.
-
 ;;; Commentary:
 ;;
 ;; When a buffer has unsaved edits and the file changes on disk (e.g. an
