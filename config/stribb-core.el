@@ -247,7 +247,10 @@ If NOEXPAND? don't expand the file name."
           ("M-r" . eglot-rename))
   :hook
   ((python-mode-hook python-ts-mode-hook go-mode-hook go-ts-mode-hook
-	yaml-mode-hook yaml-ts-mode-hook toml-ts-mode-hook) . eglot-ensure)
+	yaml-mode-hook yaml-ts-mode-hook toml-ts-mode-hook
+	json-mode-hook json-ts-mode-hook
+	css-mode-hook css-ts-mode-hook
+	html-mode-hook mhtml-mode-hook html-ts-mode-hook) . eglot-ensure)
   :custom-face
   (eglot-code-action-suggestion-face ((t (:bold t :underline t))))
   (eglot-code-action-indicator-face ((t (:bold t :underline t))))
@@ -276,7 +279,9 @@ If NOEXPAND? don't expand the file name."
                                     :diagnosticMode "workspace"))
           :ruff (:lint (:enable t)
                  :format (:enable t)
-                 :organizeImports t)))
+                 :organizeImports t)
+          :json (:validate (:enable t)
+                 :format (:enable t))))
 
   (setq eglot-server-programs
 	(append '(((python-ts-mode python-mode) .
@@ -413,7 +418,9 @@ If NOEXPAND? don't expand the file name."
     (add-hook 'c++-mode-hook 'platformio-conditionally-enable)))
 
 (use-package json-mode
-  :mode ("\\.jso?n\\'" . json-mode))
+  :mode ("\\.jso?n\\'" . json-mode)
+  :custom
+  (js-indent-level 2))
 
 (use-package indent-bars
   :hook (yaml-ts-mode . indent-bars-mode)
